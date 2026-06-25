@@ -1,3 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Play Chess vs Stockfish</title>
+    <!-- Load the Chessboard styling -->
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #262522;
+            color: white;
+            margin-top: 20px;
+        }
+        #myBoard {
+            width: 400px;
+            max-width: 90vw;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        .status-box {
+            margin: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: #81b64c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover { background-color: #a3d16c; }
+    </style>
+</head>
+<body>
+
+    <h1>Chess vs Stockfish Bot 🤖</h1>
+    <div id="myBoard"></div>
+    <div class="status-box" id="status">Your turn (White)</div>
+    <button onclick="resetGame()">Restart Game</button>
+
     <!-- Load dependencies: jQuery, Chess.js (rules), and Chessboard.js (UI) -->
     <script src="https://jquery.com"></script>
     <script src="https://cloudflare.com"></script>
@@ -22,47 +69,52 @@
             $square.css('background', background);
         }
 
-        // --- NEW: FETCH STOCKFISH ENGINE MOVE VIA CLOUD API ---
         function makeStockfishMove() {
             let possibleMoves = game.moves();
 
-            // Game over checks
             if (possibleMoves.length === 0) {
                 if (game.in_checkmate()) statusEl.html('Game Over! You win by checkmate! 🎉');
                 else statusEl.html('Game Over! Draw/Stalemate! 🤝');
                 return;
             }
 
-            // Get current board string (FEN format) to send to Stockfish
             let currentPosition = game.fen();
 
-            // Use the free Stockfish Online API (Depth 10 calculation)
+            // Fetch grandmaster move from free online API
             $.getJSON('https://stockfish.online' + encodeURIComponent(currentPosition), function(data) {
                 if (data && data.success && data.bestmove) {
-                    // Extract the move text (e.g., "e2e4")
-                    let bestMoveString = data.bestmove.split(' ')[1]; 
+                    // Clean up the text response from the API (extracts move text like "e7e5")
+                    let parts = data.bestmove.split(' ');
+                    let actualMove = parts[1]; 
                     
-                    // Convert format from "e2e4" to what chess.js understands
-                    let move = game.move({
-                        from: bestMoveString.substring(0, 2),
-                        to: bestMoveString.substring(2, 4),
-                        promotion: bestMoveString.length === 5 ? bestMoveString.charAt(4) : 'q'
-                    });
+                    if (actualMove) {
+                        let fromSq = actualMove.substring(0, 2);
+                        let toSq = actualMove.substring(2, 4);
+                        let promo = actualMove.length === 5 ? actualMove.charAt(4) : 'q';
 
-                    board.position(game.fen());
+                        game.move({
+                            from: fromSq,
+                            to: toSq,
+                            promotion: promo
+                        });
+
+                        board.position(game.fen());
+                    }
+                    
                     removeGreySquares();
 
                     if (game.game_over()) {
                         if (game.in_checkmate()) statusEl.html('Game Over! Stockfish won. 🤖');
+                        else statusEl.html('Game Over! Draw! 🤝');
                     } else {
                         statusEl.html('Your turn (White)');
                     }
                 } else {
-                    // Fallback to random move if API fails temporarily
+                    // Fallback to basic move if API stumbles
                     let randomIdx = Math.floor(Math.random() * possibleMoves.length);
                     game.move(possibleMoves[randomIdx]);
                     board.position(game.fen());
-                    statusEl.html('Your turn (White) [API Fallback]');
+                    statusEl.html('Your turn (White)');
                 }
             });
         }
@@ -129,13 +181,12 @@
             board.position(game.fen());
         }
 
-        // --- RESTART FUNCTION FIXED ---
         function resetGame() {
-            game.reset();              // Resets chess.js rules engine
-            board.start();             // Physically snaps all pieces to start position
-            selectedSquare = null;     // Clears any active tile selections
-            removeGreySquares();       // Wipes highlighting
-            statusEl.html('Your turn (White) - New Game Started!');
+            game.reset();
+            board.start();
+            selectedSquare = null;
+            removeGreySquares();
+            statusEl.html('Your turn (White)');
         }
 
         let config = {
