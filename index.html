@@ -3,50 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chess Sandbox Board</title>
-    <!-- Load clean, standard chessboard styling -->
-    <link rel="stylesheet" href="https://cloudflare.com">
+    <title>My Custom Chess Sandbox</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
-            background-color: #262522;
-            color: white;
+            align-items: center;
+            background-color: #1a1917;
             min-height: 100vh;
             margin: 0;
         }
-        #myBoard {
-            width: 450px;
+        /* Container using your custom Discord chessboard image */
+        .board-wrapper {
+            position: relative;
+            width: 500px;
+            height: 500px;
             max-width: 95vw;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-            border-radius: 4px;
-            overflow: hidden;
+            max-height: 95vw;
+            background-image: url('https://cdn.discordapp.com/attachments/1456401439122260212/1516143132696379422/copy_E3CADDD0-062E-4493-A037-94761A09955B.jpeg?ex=6a3e1813&is=6a3cc693&hm=3c6cad67cc2ba89a6ae8a6c5e2c60d375dcb7888457b5c7940587829641c8c6d');
+            background-size: 100% 100%;
+            background-position: center;
+            box-shadow: 0 12px 36px rgba(0,0,0,0.7);
+        }
+        /* Invisible 8x8 control grid placed perfectly over the image */
+        .chess-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 12.5%);
+            grid-template-rows: repeat(8, 12.5%);
+            width: 100%;
+            height: 100%;
+        }
+        .square {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            cursor: pointer;
+        }
+        /* Selection highlight color box */
+        .selected {
+            outline: 4px solid #00ffcc;
+            background-color: rgba(0, 255, 204, 0.25);
+            z-index: 5;
+        }
+        .piece {
+            width: 85%;
+            height: 85%;
+            object-fit: contain;
+            z-index: 10;
+            user-select: none;
+            -webkit-user-drag: none;
         }
     </style>
 </head>
 <body>
 
-    <!-- Render the physical 64-square board container -->
-    <div id="myBoard"></div>
+    <div class="board-wrapper">
+        <div class="chess-grid" id="board">
+            <!-- Row 8 (Top row - Black Major Pieces) -->
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
 
-    <!-- Essential minimalist script setup -->
-    <script src="https://jquery.com"></script>
-    <script src="https://cloudflare.com"></script>
+            <!-- Row 7 (Black Pawns) -->
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
+
+            <!-- Empty fields (Rows 6 to 3) -->
+            <div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div>
+            <div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div>
+            <div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div>
+            <div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div>
+
+            <!-- Row 2 (White Pawns) -->
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
+
+            <!-- Row 1 (Bottom row - White Major Pieces) -->
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
+            <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
+        </div>
+    </div>
 
     <script>
-        // Set configuration options to allow free movement across all 64 squares
-        let config = {
-            draggable: true,             // Enable drag-and-drop actions on pieces
-            dropOffBoard: 'snapback',    // Snap a piece back if dropped outside boundaries
-            position: 'start',           // Load standard piece layout positions
-            pieceTheme: 'https://cloudflare.com{piece}.png'
-        };
+        let activeSquare = null;
 
-        // Render the board layout directly into the page block
-        let board = Chessboard('myBoard', config);
+        document.getElementById('board').addEventListener('click', function(e) {
+            const clickedSquare = e.target.closest('.square');
+            if (!clickedSquare) return;
+
+            const existingPiece = clickedSquare.querySelector('.piece');
+
+            if (!activeSquare) {
+                // First click: select piece
+                if (existingPiece) {
+                    activeSquare = clickedSquare;
+                    clickedSquare.classList.add('selected');
+                }
+            } else {
+                // Second click: perform move or action
+                if (activeSquare === clickedSquare) {
+                    activeSquare.classList.remove('selected');
+                    activeSquare = null;
+                    return;
+                }
+
+                const movingPiece = activeSquare.querySelector('.piece');
+
+                // Capture piece if it lands on an opponent space
+                if (existingPiece) {
+                    existingPiece.remove();
+                }
+
+                clickedSquare.appendChild(movingPiece);
+                activeSquare.classList.remove('selected');
+                activeSquare = null;
+            }
+        });
     </script>
 </body>
 </html>
