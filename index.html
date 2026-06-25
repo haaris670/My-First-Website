@@ -14,19 +14,18 @@
             min-height: 100vh;
             margin: 0;
         }
-        /* Container using your custom Discord chessboard image */
+        /* Uses your uploaded local board.jpg file */
         .board-wrapper {
             position: relative;
-            width: 500px;
-            height: 500px;
+            width: 480px;
+            height: 480px;
             max-width: 95vw;
             max-height: 95vw;
-            background-image: url('https://cdn.discordapp.com/attachments/1456401439122260212/1516143132696379422/copy_E3CADDD0-062E-4493-A037-94761A09955B.jpeg?ex=6a3e1813&is=6a3cc693&hm=3c6cad67cc2ba89a6ae8a6c5e2c60d375dcb7888457b5c7940587829641c8c6d');
+            background-image: url('board.jpg');
             background-size: 100% 100%;
             background-position: center;
-            box-shadow: 0 12px 36px rgba(0,0,0,0.7);
+            box-shadow: 0 12px 36px rgba(0,0,0,0.8);
         }
-        /* Invisible 8x8 control grid placed perfectly over the image */
         .chess-grid {
             display: grid;
             grid-template-columns: repeat(8, 12.5%);
@@ -44,7 +43,7 @@
             box-sizing: border-box;
             cursor: pointer;
         }
-        /* Selection highlight color box */
+        /* Cyan box highlight when you select a piece */
         .selected {
             outline: 4px solid #00ffcc;
             background-color: rgba(0, 255, 204, 0.25);
@@ -64,7 +63,7 @@
 
     <div class="board-wrapper">
         <div class="chess-grid" id="board">
-            <!-- Row 8 (Top row - Black Major Pieces) -->
+            <!-- Row 8 (Black Major Pieces) -->
             <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
             <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
             <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
@@ -84,7 +83,7 @@
             <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
             <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
 
-            <!-- Empty fields (Rows 6 to 3) -->
+            <!-- Rows 6 to 3 (Empty Grid Spaces) -->
             <div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div>
             <div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div>
             <div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div>
@@ -100,7 +99,7 @@
             <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
             <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
 
-            <!-- Row 1 (Bottom row - White Major Pieces) -->
+            <!-- Row 1 (White Major Pieces) -->
             <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
             <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
             <div class="square"><img src="https://chessboardjs.com" class="piece"></div>
@@ -122,13 +121,13 @@
             const existingPiece = clickedSquare.querySelector('.piece');
 
             if (!activeSquare) {
-                // First click: select piece
+                // First click: Select a piece to move
                 if (existingPiece) {
                     activeSquare = clickedSquare;
                     clickedSquare.classList.add('selected');
                 }
             } else {
-                // Second click: perform move or action
+                // Second click: If clicking the same square, deselect it
                 if (activeSquare === clickedSquare) {
                     activeSquare.classList.remove('selected');
                     activeSquare = null;
@@ -137,11 +136,12 @@
 
                 const movingPiece = activeSquare.querySelector('.piece');
 
-                // Capture piece if it lands on an opponent space
+                // If moving onto an existing piece, capture it
                 if (existingPiece) {
                     existingPiece.remove();
                 }
 
+                // Relocate the piece across the grid positions
                 clickedSquare.appendChild(movingPiece);
                 activeSquare.classList.remove('selected');
                 activeSquare = null;
