@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Play Chess vs Stockfish</title>
+    <title>Play Chess vs Bot</title>
     <!-- Load the Chessboard styling -->
     <link rel="stylesheet" href="https://cloudflare.com">
     <style>
@@ -40,12 +40,12 @@
 </head>
 <body>
 
-    <h1>Chess vs Stockfish Bot 🤖</h1>
+    <h1>Chess vs Smart Capture Bot 🤖</h1>
     <div id="myBoard"></div>
     <div class="status-box" id="status">Your turn (White)</div>
     <button onclick="resetGame()">Restart Game</button>
 
-    <!-- Load dependencies: jQuery, Chess.js (rules), and Chessboard.js (UI) -->
+    <!-- Load stable web libraries -->
     <script src="https://jquery.com"></script>
     <script src="https://cloudflare.com"></script>
     <script src="https://cloudflare.com"></script>
@@ -69,8 +69,11 @@
             $square.css('background', background);
         }
 
-        function makeStockfishMove() {
-            let possibleMoves = game.moves();
+        // Define value weights for the bot to evaluate capturing choices
+        const pieceValues = { p: 10, n: 30, b: 30, r: 50, q: 90, k: 900 };
+
+        function makeSmartBotMove() {
+            let possibleMoves = game.moves({ verbose: true });
 
             if (possibleMoves.length === 0) {
                 if (game.in_checkmate()) statusEl.html('Game Over! You win by checkmate! 🎉');
@@ -78,45 +81,49 @@
                 return;
             }
 
-            let currentPosition = game.fen();
+            let bestMove = null;
+            let highestValue = -9999;
 
-            // Fetch grandmaster move from free online API
-            $.getJSON('https://stockfish.online' + encodeURIComponent(currentPosition), function(data) {
-                if (data && data.success && data.bestmove) {
-                    // Clean up the text response from the API (extracts move text like "e7e5")
-                    let parts = data.bestmove.split(' ');
-                    let actualMove = parts[1]; 
-                    
-                    if (actualMove) {
-                        let fromSq = actualMove.substring(0, 2);
-                        let toSq = actualMove.substring(2, 4);
-                        let promo = actualMove.length === 5 ? actualMove.charAt(4) : 'q';
+            // Iterate through every legal move to evaluate its outcome
+            for (let i = 0; i < possibleMoves.length; i++) {
+                let currentMove = possibleMoves[i];
+                let value = 0;
 
-                        game.move({
-                            from: fromSq,
-                            to: toSq,
-                            promotion: promo
-                        });
-
-                        board.position(game.fen());
-                    }
-                    
-                    removeGreySquares();
-
-                    if (game.game_over()) {
-                        if (game.in_checkmate()) statusEl.html('Game Over! Stockfish won. 🤖');
-                        else statusEl.html('Game Over! Draw! 🤝');
-                    } else {
-                        statusEl.html('Your turn (White)');
-                    }
-                } else {
-                    // Fallback to basic move if API stumbles
-                    let randomIdx = Math.floor(Math.random() * possibleMoves.length);
-                    game.move(possibleMoves[randomIdx]);
-                    board.position(game.fen());
-                    statusEl.html('Your turn (White)');
+                // Priority 1: If it is a capturing move, favor it based on the piece target value
+                if (currentMove.captured) {
+                    value += pieceValues[currentMove.captured];
                 }
-            });
+
+                // Priority 2: Give a small point bump if it puts you in check
+                game.move(currentMove.san);
+                if (game.in_check()) {
+                    value += 5;
+                }
+                game.undo(); // Rollback simulation state
+
+                // Select the highest value option
+                if (value > highestValue) {
+                    highestValue = value;
+                    bestMove = currentMove;
+                }
+            }
+
+            // Fallback to a random choice if no advantageous capture options exist
+            if (highestValue === 0) {
+                let randomIdx = Math.floor(Math.random() * possibleMoves.length);
+                bestMove = possibleMoves[randomIdx];
+            }
+
+            game.move(bestMove.san);
+            board.position(game.fen());
+            removeGreySquares();
+
+            if (game.game_over()) {
+                if (game.in_checkmate()) statusEl.html('Game Over! The Bot won. 🤖');
+                else statusEl.html('Game Over! Draw! 🤝');
+            } else {
+                statusEl.html('Your turn (White)');
+            }
         }
 
         function handleSquareClick(square) {
@@ -146,8 +153,8 @@
                 board.position(game.fen());
                 selectedSquare = null;
                 removeGreySquares();
-                statusEl.html('Stockfish Bot is thinking... 🤔');
-                window.setTimeout(makeStockfishMove, 250);
+                statusEl.html('Bot is evaluating moves... 🤖');
+                window.setTimeout(makeSmartBotMove, 250);
             } else {
                 let piece = game.get(square);
                 if (piece && piece.color === 'w') {
@@ -173,8 +180,8 @@
 
             selectedSquare = null;
             removeGreySquares();
-            statusEl.html('Stockfish Bot is thinking... 🤔');
-            window.setTimeout(makeStockfishMove, 250);
+            statusEl.html('Bot is evaluating moves... 🤖');
+            window.setTimeout(makeSmartBotMove, 250);
         }
 
         function onSnapEnd() {
