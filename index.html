@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Play Chess vs Bot</title>
-    <!-- Load the Chessboard styling -->
+    <title>Chess Sandbox Board</title>
+    <!-- Load clean, standard chessboard styling -->
     <link rel="stylesheet" href="https://cloudflare.com">
     <style>
         body {
@@ -12,204 +12,41 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             background-color: #262522;
             color: white;
-            margin-top: 20px;
+            min-height: 100vh;
+            margin: 0;
         }
         #myBoard {
-            width: 400px;
-            max-width: 90vw;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            width: 450px;
+            max-width: 95vw;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+            border-radius: 4px;
+            overflow: hidden;
         }
-        .status-box {
-            margin: 15px;
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 1rem;
-            background-color: #81b64c;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover { background-color: #a3d16c; }
     </style>
 </head>
 <body>
 
-    <h1>Chess vs Smart Capture Bot 🤖</h1>
+    <!-- Render the physical 64-square board container -->
     <div id="myBoard"></div>
-    <div class="status-box" id="status">Your turn (White)</div>
-    <button onclick="resetGame()">Restart Game</button>
 
-    <!-- Load stable web libraries -->
+    <!-- Essential minimalist script setup -->
     <script src="https://jquery.com"></script>
-    <script src="https://cloudflare.com"></script>
     <script src="https://cloudflare.com"></script>
 
     <script>
-        let board = null;
-        let game = new Chess();
-        const statusEl = $('#status');
-        let selectedSquare = null;
-
-        function removeGreySquares() {
-            $('#myBoard .square-55d63').css('background', '');
-        }
-
-        function greySquare(square) {
-            let $square = $('#myBoard .square-' + square);
-            let background = '#a9a9a9';
-            if ($square.hasClass('black-3c85d')) {
-                background = '#696969';
-            }
-            $square.css('background', background);
-        }
-
-        // Define value weights for the bot to evaluate capturing choices
-        const pieceValues = { p: 10, n: 30, b: 30, r: 50, q: 90, k: 900 };
-
-        function makeSmartBotMove() {
-            let possibleMoves = game.moves({ verbose: true });
-
-            if (possibleMoves.length === 0) {
-                if (game.in_checkmate()) statusEl.html('Game Over! You win by checkmate! 🎉');
-                else statusEl.html('Game Over! Draw/Stalemate! 🤝');
-                return;
-            }
-
-            let bestMove = null;
-            let highestValue = -9999;
-
-            // Iterate through every legal move to evaluate its outcome
-            for (let i = 0; i < possibleMoves.length; i++) {
-                let currentMove = possibleMoves[i];
-                let value = 0;
-
-                // Priority 1: If it is a capturing move, favor it based on the piece target value
-                if (currentMove.captured) {
-                    value += pieceValues[currentMove.captured];
-                }
-
-                // Priority 2: Give a small point bump if it puts you in check
-                game.move(currentMove.san);
-                if (game.in_check()) {
-                    value += 5;
-                }
-                game.undo(); // Rollback simulation state
-
-                // Select the highest value option
-                if (value > highestValue) {
-                    highestValue = value;
-                    bestMove = currentMove;
-                }
-            }
-
-            // Fallback to a random choice if no advantageous capture options exist
-            if (highestValue === 0) {
-                let randomIdx = Math.floor(Math.random() * possibleMoves.length);
-                bestMove = possibleMoves[randomIdx];
-            }
-
-            game.move(bestMove.san);
-            board.position(game.fen());
-            removeGreySquares();
-
-            if (game.game_over()) {
-                if (game.in_checkmate()) statusEl.html('Game Over! The Bot won. 🤖');
-                else statusEl.html('Game Over! Draw! 🤝');
-            } else {
-                statusEl.html('Your turn (White)');
-            }
-        }
-
-        function handleSquareClick(square) {
-            let moves = game.moves({ square: square, verbose: true });
-
-            if (selectedSquare) {
-                let move = game.move({
-                    from: selectedSquare,
-                    to: square,
-                    promotion: 'q'
-                });
-
-                if (move === null) {
-                    removeGreySquares();
-                    let piece = game.get(square);
-                    if (piece && piece.color === 'w') {
-                        selectedSquare = square;
-                        greySquare(square);
-                        let targets = game.moves({ square: square, verbose: true });
-                        targets.forEach(m => greySquare(m.to));
-                    } else {
-                        selectedSquare = null;
-                    }
-                    return;
-                }
-
-                board.position(game.fen());
-                selectedSquare = null;
-                removeGreySquares();
-                statusEl.html('Bot is evaluating moves... 🤖');
-                window.setTimeout(makeSmartBotMove, 250);
-            } else {
-                let piece = game.get(square);
-                if (piece && piece.color === 'w') {
-                    selectedSquare = square;
-                    greySquare(square);
-                    moves.forEach(m => greySquare(m.to));
-                }
-            }
-        }
-
-        function onDragStart(source, piece, position, orientation) {
-            if (game.game_over() || piece.search(/^b/) !== -1) return false;
-        }
-
-        function onDrop(source, target) {
-            let move = game.move({
-                from: source,
-                to: target,
-                promotion: 'q'
-            });
-
-            if (move === null) return 'snapback';
-
-            selectedSquare = null;
-            removeGreySquares();
-            statusEl.html('Bot is evaluating moves... 🤖');
-            window.setTimeout(makeSmartBotMove, 250);
-        }
-
-        function onSnapEnd() {
-            board.position(game.fen());
-        }
-
-        function resetGame() {
-            game.reset();
-            board.start();
-            selectedSquare = null;
-            removeGreySquares();
-            statusEl.html('Your turn (White)');
-        }
-
+        // Set configuration options to allow free movement across all 64 squares
         let config = {
-            draggable: true,
-            position: 'start',
-            onDragStart: onDragStart,
-            onDrop: onDrop,
-            onSnapEnd: onSnapEnd,
+            draggable: true,             // Enable drag-and-drop actions on pieces
+            dropOffBoard: 'snapback',    // Snap a piece back if dropped outside boundaries
+            position: 'start',           // Load standard piece layout positions
             pieceTheme: 'https://cloudflare.com{piece}.png'
         };
-        board = Chessboard('myBoard', config);
 
-        $('#myBoard').on('click', '.square-55d63', function() {
-            let square = $(this).attr('data-square');
-            handleSquareClick(square);
-        });
+        // Render the board layout directly into the page block
+        let board = Chessboard('myBoard', config);
     </script>
 </body>
 </html>
