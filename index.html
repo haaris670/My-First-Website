@@ -7,7 +7,7 @@
         let board = null;
         let game = new Chess();
         const statusEl = $('#status');
-        let selectedSquare = null; // Track the first clicked piece
+        let selectedSquare = null;
 
         function removeGreySquares() {
             $('#myBoard .square-55d63').css('background', '');
@@ -22,33 +22,54 @@
             $square.css('background', background);
         }
 
-        function makeRandomMove() {
+        // --- NEW: FETCH STOCKFISH ENGINE MOVE VIA CLOUD API ---
+        function makeStockfishMove() {
             let possibleMoves = game.moves();
 
+            // Game over checks
             if (possibleMoves.length === 0) {
                 if (game.in_checkmate()) statusEl.html('Game Over! You win by checkmate! 🎉');
                 else statusEl.html('Game Over! Draw/Stalemate! 🤝');
                 return;
             }
 
-            let randomIdx = Math.floor(Math.random() * possibleMoves.length);
-            game.move(possibleMoves[randomIdx]);
-            board.position(game.fen());
-            removeGreySquares();
-            
-            if (game.game_over()) {
-                if (game.in_checkmate()) statusEl.html('Game Over! The Bot won. 🤖');
-            } else {
-                statusEl.html('Your turn (White)');
-            }
+            // Get current board string (FEN format) to send to Stockfish
+            let currentPosition = game.fen();
+
+            // Use the free Stockfish Online API (Depth 10 calculation)
+            $.getJSON('https://stockfish.online' + encodeURIComponent(currentPosition), function(data) {
+                if (data && data.success && data.bestmove) {
+                    // Extract the move text (e.g., "e2e4")
+                    let bestMoveString = data.bestmove.split(' ')[1]; 
+                    
+                    // Convert format from "e2e4" to what chess.js understands
+                    let move = game.move({
+                        from: bestMoveString.substring(0, 2),
+                        to: bestMoveString.substring(2, 4),
+                        promotion: bestMoveString.length === 5 ? bestMoveString.charAt(4) : 'q'
+                    });
+
+                    board.position(game.fen());
+                    removeGreySquares();
+
+                    if (game.game_over()) {
+                        if (game.in_checkmate()) statusEl.html('Game Over! Stockfish won. 🤖');
+                    } else {
+                        statusEl.html('Your turn (White)');
+                    }
+                } else {
+                    // Fallback to random move if API fails temporarily
+                    let randomIdx = Math.floor(Math.random() * possibleMoves.length);
+                    game.move(possibleMoves[randomIdx]);
+                    board.position(game.fen());
+                    statusEl.html('Your turn (White) [API Fallback]');
+                }
+            });
         }
 
-        // Handle square clicking
         function handleSquareClick(square) {
-            // Get list of legal moves for this state
             let moves = game.moves({ square: square, verbose: true });
 
-            // If a piece was already selected, try to move there
             if (selectedSquare) {
                 let move = game.move({
                     from: selectedSquare,
@@ -56,7 +77,6 @@
                     promotion: 'q'
                 });
 
-                // If illegal move, reset selection or switch selected piece
                 if (move === null) {
                     removeGreySquares();
                     let piece = game.get(square);
@@ -71,14 +91,12 @@
                     return;
                 }
 
-                // If valid move executed
                 board.position(game.fen());
                 selectedSquare = null;
                 removeGreySquares();
-                statusEl.html('Bot is thinking...');
-                window.setTimeout(makeRandomMove, 250);
+                statusEl.html('Stockfish Bot is thinking... 🤔');
+                window.setTimeout(makeStockfishMove, 250);
             } else {
-                // First click: select a white piece
                 let piece = game.get(square);
                 if (piece && piece.color === 'w') {
                     selectedSquare = square;
@@ -103,20 +121,21 @@
 
             selectedSquare = null;
             removeGreySquares();
-            statusEl.html('Bot is thinking...');
-            window.setTimeout(makeRandomMove, 250);
+            statusEl.html('Stockfish Bot is thinking... 🤔');
+            window.setTimeout(makeStockfishMove, 250);
         }
 
         function onSnapEnd() {
             board.position(game.fen());
         }
 
+        // --- RESTART FUNCTION FIXED ---
         function resetGame() {
-            game.reset();
-            board.start();
-            selectedSquare = null;
-            removeGreySquares();
-            statusEl.html('Your turn (White)');
+            game.reset();              // Resets chess.js rules engine
+            board.start();             // Physically snaps all pieces to start position
+            selectedSquare = null;     // Clears any active tile selections
+            removeGreySquares();       // Wipes highlighting
+            statusEl.html('Your turn (White) - New Game Started!');
         }
 
         let config = {
@@ -129,7 +148,6 @@
         };
         board = Chessboard('myBoard', config);
 
-        // Bind click events to the board squares
         $('#myBoard').on('click', '.square-55d63', function() {
             let square = $(this).attr('data-square');
             handleSquareClick(square);
