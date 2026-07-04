@@ -3,29 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Website</title>
+    <title>Math Quiz Game</title>
     <style>
-        /* This centers the text on the blank screen */
         body {
             margin: 0;
             padding: 0;
-            background-color: #ffffff; /* White background */
+            background-color: #f0f4f8;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            font-family: Arial, sans-serif;
+            font-family: 'Arial Black', sans-serif;
         }
 
-        h1 {
-            font-size: 3rem;
-            color: #333333; /* Dark grey text */
+        .score-board {
+            font-size: 1.5rem;
+            color: #747d8c;
+            margin-bottom: 20px;
+        }
+
+        .math-container {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+
+        .first-number { color: #ff4757; text-shadow: 3px 3px 0px #ffccd5; }
+        .symbol { color: #747d8c; margin: 0 15px; }
+        .second-number { color: #2ed573; text-shadow: 3px 3px 0px #c1e1c1; }
+
+        input {
+            font-size: 4rem;
+            width: 150px;
+            text-align: center;
+            border: 4px solid #747d8c;
+            border-radius: 10px;
+            font-family: inherit;
+            color: #1e90ff;
+        }
+
+        button {
+            font-size: 1.5rem;
+            padding: 10px 20px;
+            background-color: #1e90ff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            margin-top: 15px;
+        }
+
+        button:hover {
+            background-color: #1170cd;
+        }
+
+        #message {
+            margin-top: 20px;
+            font-size: 2rem;
+            min-height: 40px;
         }
     </style>
+
+    <script>
+        // 1. Our list of questions, symbols, and correct answers
+        const questions = [
+            { num1: 7, symbol: "×", num2: 6, answer: 42 },
+            { num1: 9, symbol: "×", num2: 8, answer: 72 },
+            { num1: 12, symbol: "×", num2: 4, answer: 48 },
+            { num1: 15, symbol: "×", num2: 3, answer: 45 },
+            { num1: 8, symbol: "×", num2: 6, answer: 48 }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        // 2. Function to load a question onto the screen
+        function loadQuestion() {
+            if (currentQuestionIndex < questions.length) {
+                const currentQuestion = questions[currentQuestionIndex];
+                
+                // Update the numbers and symbol on the screen
+                document.getElementById("num1").textContent = currentQuestion.num1;
+                document.getElementById("symbol").textContent = currentQuestion.symbol;
+                document.getElementById("num2").textContent = currentQuestion.num2;
+                
+                // Clear the input box and clear the message
+                document.getElementById("userAnswer").value = "";
+                document.getElementById("message").textContent = "";
+            } else {
+                // If they finished all questions
+                document.getElementById("game-area").innerHTML = "<h1>🎉 You Beat the Game! 🎉</h1>";
+                document.getElementById("check-btn").style.display = "none";
+            }
+        }
+
+        // 3. Function to check the answer
+        function checkAnswer() {
+            const reply = document.getElementById("userAnswer").value;
+            const messageElement = document.getElementById("message");
+            const correctAnswer = questions[currentQuestionIndex].answer;
+
+            if (reply == correctAnswer) {
+                score++;
+                document.getElementById("score").textContent = score;
+                messageElement.textContent = "🎉 Correct!";
+                messageElement.style.color = "#2ed573";
+                
+                // Move to the next question after a 1-second delay so they see the success message
+                currentQuestionIndex++;
+                setTimeout(loadQuestion, 1000);
+            } else {
+                messageElement.textContent = "❌ Try again!";
+                messageElement.style.color = "#ff4757";
+            }
+        }
+
+        // Setup listeners when the page opens
+        window.onload = function() {
+            loadQuestion(); // Load the first question immediately
+            
+            document.getElementById("userAnswer").addEventListener("keypress", function(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    checkAnswer();
+                }
+            });
+        };
+    </script>
 </head>
 <body>
 
-    <h1>Welcome to my website</h1>
+    <div class="score-board">Score: <span id="score">0</span> / 5</div>
+
+    <div id="game-area">
+        <div class="math-container">
+            <span class="first-number" id="num1">?</span>
+            <span class="symbol" id="symbol">×</span>
+            <span class="second-number" id="num2">?</span>
+            <span class="symbol">=</span>
+            <input type="number" id="userAnswer" placeholder="?">
+        </div>
+    </div>
+
+    <button id="check-btn" onclick="checkAnswer()">Check Answer</button>
+    
+    <div id="message"></div>
 
 </body>
 </html>
