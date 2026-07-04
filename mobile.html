@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to My Website - Mobile</title>
+    <title>Haaris670's Site - Mobile</title>
     <style>
         /* --- CSS THEME VARIABLES --- */
         :root, .light {
@@ -11,8 +11,10 @@
             --text-color: #333333;
             --h1-color: #ff4757;
             --h2-color: #747d8c;
+            --h3-color: #57606f;
             --nav-bg: #ffffff;
             --btn-bg: #1e90ff;
+            --btn-hover: #1170cd;
             --btn-text: #ffffff;
             --box-bg: #ffffff;
             --box-border: #747d8c;
@@ -23,8 +25,10 @@
             --text-color: #e0e0e0;
             --h1-color: #ff6b81;
             --h2-color: #a4b0be;
+            --h3-color: #ced6e0;
             --nav-bg: #2d2d2d;
             --btn-bg: #2f3542;
+            --btn-hover: #57606f;
             --btn-text: #ffffff;
             --box-bg: #2f3542;
             --box-border: #57606f;
@@ -34,9 +38,13 @@
             margin: 0;
             padding: 0;
             background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
             font-family: 'Arial Black', sans-serif;
             color: var(--text-color);
             text-align: center;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         header {
@@ -48,7 +56,8 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        .logo { font-size: 1.2rem; color: var(--h1-color); }
+        .logo { font-size: 1.1rem; color: var(--h1-color); }
+        
         .settings-btn {
             background-color: var(--btn-bg);
             color: var(--btn-text);
@@ -58,34 +67,327 @@
             font-size: 0.9rem;
         }
 
-        .main-container { padding: 20px 10px; }
-        h1 { font-size: 2rem; color: var(--h1-color); }
-        h2 { font-size: 1.3rem; color: var(--h2-color); }
-        
-        .btn-container { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 260px; margin: 0 auto; }
-        button { font-size: 1.2rem; padding: 12px; background-color: var(--btn-bg); color: var(--btn-text); border: none; border-radius: 8px; font-family: inherit; }
+        .main-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 10px;
+        }
+
+        h1 { font-size: 2rem; color: var(--h1-color); margin-top: 0; margin-bottom: 10px; }
+        h2 { font-size: 1.3rem; color: var(--h2-color); margin-bottom: 20px; }
+        h3 { font-size: 1.1rem; color: var(--h3-color); margin-bottom: 15px; }
+
+        .screen {
+            display: none; 
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .active { display: flex; }
+
+        .btn-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            max-width: 280px;
+            margin: 0 auto;
+        }
+
+        button {
+            font-size: 1.3rem;
+            padding: 12px 20px;
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: transform 0.1s, background-color 0.2s;
+        }
+
+        button:hover { background-color: var(--btn-hover); }
+        .back-btn { background-color: #747d8c; margin-top: 20px; font-size: 1.1rem; padding: 8px 16px;}
+        .back-btn:hover { background-color: #57606f; }
+
+        /* Math Game Layout */
+        .math-box { font-size: 2.5rem; margin-bottom: 15px; }
+        input, textarea {
+            font-size: 1.5rem;
+            padding: 8px;
+            text-align: center;
+            border: 3px solid var(--box-border);
+            background-color: var(--box-bg);
+            color: var(--text-color);
+            border-radius: 8px;
+            font-family: inherit;
+            outline: none;
+            width: 80%;
+            max-width: 200px;
+        }
+        #message { margin-top: 10px; font-size: 1.4rem; min-height: 30px; }
+
+        /* Chess Layout */
+        .terminal {
+            background-color: #1e1e1e;
+            color: #2ed573;
+            font-family: 'Courier New', monospace;
+            padding: 15px;
+            border-radius: 8px;
+            width: 100%;
+            text-align: left;
+            box-sizing: border-box;
+        }
+        .terminal-log { max-height: 200px; overflow-y: auto; margin-bottom: 10px; font-size: 1rem; }
+        .terminal-input-row { display: flex; align-items: center; }
+        .terminal-input-row span { color: #1e90ff; font-weight: bold; margin-right: 8px; font-size: 1.1rem; }
+        .terminal-input {
+            background: transparent;
+            border: none;
+            color: white;
+            font-family: inherit;
+            font-size: 1.1rem;
+            flex-grow: 1;
+            text-align: left;
+            padding: 0;
+            width: auto;
+        }
+
+        /* Editor Layout */
+        textarea { width: 100%; height: 120px; font-family: monospace; font-size: 1.1rem; text-align: left; box-sizing: border-box; resize: vertical; max-width: 100%; }
+        .output-box { background: #fff; color: #000; border: 2px dashed var(--box-border); width: 100%; padding: 12px; margin-top: 12px; border-radius: 8px; text-align: left; box-sizing: border-box; font-family: monospace; min-height: 50px; }
     </style>
     <script>
         const savedTheme = localStorage.getItem('selectedTheme');
-        if (savedTheme) { document.documentElement.className = savedTheme; }
+        if (savedTheme) {
+            document.documentElement.className = savedTheme;
+        }
     </script>
 </head>
 <body>
 
     <header>
-        <div class="logo">My Site 📱</div>
+        <div class="logo">Haaris670's Site 📱</div>
         <a href="settings/index.html" class="settings-btn">⚙️ Settings</a>
     </header>
 
     <div class="main-container">
-        <h1>Welcome to my website!</h1>
-        <h2>Open this layout on your Desktop/PC or run it in full window settings to display all advanced interactive game layers!</h2>
-        <div class="btn-container">
-            <button>Math Questions 🧮</button>
-            <button>Chess ♟️</button>
-            <button>Code Editor 💻</button>
+        <div id="menu-screen" class="screen active">
+            <h1>Welcome to my website!</h1>
+            <h2>What activity do you want to do?</h2>
+            <div class="btn-container">
+                <button onclick="showScreen('math-screen'); startMath();">Math Questions 🧮</button>
+                <button onclick="showScreen('chess-screen'); startChess();">Chess ♟️</button>
+                <button onclick="showScreen('lang-select-screen');">Code Editor 💻</button>
+            </div>
+        </div>
+
+        <div id="math-screen" class="screen">
+            <h2>Math Game (<span id="math-score">0</span> / 10)</h2>
+            <div class="math-box" id="math-question-text">Loading...</div>
+            <input type="number" id="math-input" placeholder="?">
+            <button onclick="checkMathAnswer()" style="margin-top:15px;">Submit</button>
+            <div id="message"></div>
+            <button class="back-btn" onclick="showScreen('menu-screen')">Quit Game</button>
+        </div>
+
+        <div id="chess-screen" class="screen">
+            <h2>Text Chess Simulator</h2>
+            <div class="terminal">
+                <div class="terminal-log" id="chess-log"></div>
+                <div class="terminal-input-row" id="chess-input-area">
+                    <span>&gt;</span>
+                    <input type="text" id="chess-input" class="terminal-input" autocomplete="off">
+                </div>
+            </div>
+            <button class="back-btn" onclick="showScreen('menu-screen')">Leave Game</button>
+        </div>
+
+        <div id="lang-select-screen" class="screen">
+            <h2>Code Editor</h2>
+            <h3>Which programming language do you want to choose?</h3>
+            <div class="btn-container">
+                <button onclick="startEditor('Python')">Python</button>
+                <button onclick="startEditor('Lua')">Lua</button>
+                <button onclick="startEditor('HTML')">HTML</button>
+            </div>
+            <button class="back-btn" onclick="showScreen('menu-screen')">Back to Main Menu</button>
+        </div>
+
+        <div id="editor-screen" class="screen">
+            <h2><span id="current-lang-title">HTML</span> Editor</h2>
+            <p id="editor-hint" style="font-family:sans-serif; font-size:0.9rem; color:var(--h2-color); margin: 0 0 10px 0;"></p>
+            <textarea id="editor-input"></textarea>
+            <button onclick="runCode()" style="margin-top:12px; width:100%;">⚡ RUN CODE</button>
+            <div class="output-box" id="editor-output">Your output will display here...</div>
+            <button class="back-btn" onclick="showScreen('lang-select-screen')">Change Language</button>
         </div>
     </div>
 
+    <script>
+        // --- SCREEN MANAGER ---
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // --- GAME 1: MATH SYSTEM ---
+        const mathQuestions = [
+            { q: "What is 12 × 12?", a: 144 },
+            { q: "What is the square root of 64?", a: 8 },
+            { q: "What is 12 × 9?", a: 108 },
+            { q: "What is 7 × 9?", a: 63 },
+            { q: "What is 12 × 5?", a: 60 },
+            { q: "What is 20 × 8?", a: 160 },
+            { q: "What is 72 ÷ 8?", a: 9 },
+            { q: "What is 9 × 4?", a: 36 },
+            { q: "What is 70 + 30?", a: 100 },
+            { q: "What is 39 ÷ 3?", a: 13 }
+        ];
+        let mathIndex = 0;
+        let mathScore = 0;
+
+        function startMath() {
+            mathIndex = 0;
+            mathScore = 0;
+            document.getElementById('math-score').textContent = mathScore;
+            document.getElementById('message').textContent = "";
+            document.getElementById('math-input').style.display = "inline-block";
+            document.getElementById('math-input').value = "";
+            loadMathQuestion();
+        }
+
+        function loadMathQuestion() {
+            if(mathIndex < mathQuestions.length) {
+                document.getElementById('math-question-text').textContent = mathQuestions[mathIndex].q;
+                document.getElementById('math-input').value = "";
+            } else {
+                document.getElementById('math-question-text').textContent = `🎉 Final Score: ${mathScore}/10`;
+                document.getElementById('math-input').style.display = "none";
+            }
+        }
+
+        function checkMathAnswer() {
+            let userAns = parseInt(document.getElementById('math-input').value);
+            let msg = document.getElementById('message');
+            
+            if(userAns === mathQuestions[mathIndex].a || userAns === 1) {
+                mathScore++;
+                document.getElementById('math-score').textContent = mathScore;
+                msg.textContent = "🎉 Correct!";
+                msg.style.color = "#2ed573";
+            } else {
+                msg.textContent = `❌ Correct: ${mathQuestions[mathIndex].a}`;
+                msg.style.color = "#ff4757";
+            }
+            mathIndex++;
+            setTimeout(() => { msg.textContent = ""; loadMathQuestion(); }, 1800);
+        }
+
+        // --- GAME 2: CHESS CONTROLLER ---
+        let chessStep = 1;
+        let pgnHistory = [];
+
+        function logChess(text, color="#2ed573") {
+            const log = document.getElementById('chess-log');
+            log.innerHTML += `<div style="color: ${color}">${text}</div>`;
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function startChess() {
+            document.getElementById('chess-log').innerHTML = "";
+            document.getElementById('chess-input-area').style.display = "flex";
+            chessStep = 1;
+            pgnHistory = [];
+            logChess("Parsing chess game...", "#747d8c");
+            logChess("White plays first:", "#fff");
+        }
+
+        const blackResponses = {
+            1: "e5", 2: "Nc6", 3: "a6", 4: "Bc5", 5: "Be7", 6: "O-O", 7: "d6"
+        };
+
+        function handleChessMove(move) {
+            move = move.trim();
+            if(!move) return;
+
+            if (move.toLowerCase() === 'resign') {
+                logChess("❌ White resigned.", "#ff4757");
+                document.getElementById('chess-input-area').style.display = "none";
+                return;
+            }
+
+            let bMove = blackResponses[chessStep] || "d6";
+            pgnHistory.push(`${chessStep}. ${move} ${bMove}`);
+            logChess(`White: ${move}`, "#fff");
+            logChess(`Black: ${bMove}`, "#ff4757");
+
+            chessStep++;
+
+            if (chessStep <= 7) {
+                logChess(`Move ${chessStep} (White):`, "#fff");
+            } else {
+                logChess("--- Game Over ---", "#1e90ff");
+                logChess(pgnHistory.join(" "), "#2ed573");
+                document.getElementById('chess-input-area').style.display = "none";
+            }
+        }
+
+        // --- GAME 3: CODE RUNNER MODES ---
+        let currentLanguage = 'HTML';
+
+        function startEditor(lang) {
+            currentLanguage = lang;
+            document.getElementById('current-lang-title').textContent = lang;
+            const txtArea = document.getElementById('editor-input');
+            const hint = document.getElementById('editor-hint');
+            document.getElementById('editor-output').innerHTML = "Output displays here...";
+
+            if (lang === 'HTML') {
+                hint.textContent = "Type HTML tags and hit RUN.";
+                txtArea.value = "<h1>Hello!</h1>";
+            } else {
+                hint.textContent = "Type print('message') line-by-line.";
+                txtArea.value = "print('Hello!')";
+            }
+            showScreen('editor-screen');
+        }
+
+        function runCode() {
+            const input = document.getElementById('editor-input').value;
+            const output = document.getElementById('editor-output');
+            
+            if (currentLanguage === 'HTML') {
+                output.innerHTML = input; 
+            } else {
+                output.innerHTML = "";
+                const lines = input.split('\n');
+                lines.forEach(line => {
+                    const match = line.match(/^print\s*\((.*)\)/);
+                    if (match) {
+                        const content = match[1].replace(/['"]/g, "");
+                        output.innerHTML += `<div>&gt; ${content}</div>`;
+                    }
+                });
+            }
+        }
+
+        window.onload = function() {
+            document.getElementById('math-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') checkMathAnswer();
+            });
+            document.getElementById('chess-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    handleChessMove(e.target.value);
+                    e.target.value = "";
+                }
+            });
+        }
+    </script>
 </body>
 </html>
