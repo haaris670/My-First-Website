@@ -3,103 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Website - Mobile</title>
-    
+    <title>Welcome to My Website - Mobile</title>
     <style>
         /* --- CSS THEME VARIABLES --- */
         :root, .light {
-            --bg-color: #ffffff;
+            --bg-color: #f0f4f8;
             --text-color: #333333;
-            --nav-bg: #f8f9fa;
-            --btn-bg: #e2e8f0;
-            --btn-text: #000000;
+            --h1-color: #ff4757;
+            --h2-color: #747d8c;
+            --nav-bg: #ffffff;
+            --btn-bg: #1e90ff;
+            --btn-text: #ffffff;
+            --box-bg: #ffffff;
+            --box-border: #747d8c;
         }
 
         .dark {
             --bg-color: #1a1a1a;
-            --text-color: #ffffff;
+            --text-color: #e0e0e0;
+            --h1-color: #ff6b81;
+            --h2-color: #a4b0be;
             --nav-bg: #2d2d2d;
-            --btn-bg: #4a5568;
+            --btn-bg: #2f3542;
             --btn-text: #ffffff;
+            --box-bg: #2f3542;
+            --box-border: #57606f;
         }
 
         body {
             margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            padding: 0;
             background-color: var(--bg-color);
+            font-family: 'Arial Black', sans-serif;
             color: var(--text-color);
-            transition: background-color 0.3s, color 0.3s;
+            text-align: center;
         }
 
         header {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            padding: 15px;
+            padding: 10px 15px;
             background-color: var(--nav-bg);
-            border-bottom: 1px solid rgba(0,0,0,0.1);
-            gap: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        .logo {
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        .nav-links {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        /* --- MOBILE BUTTONS --- */
-        .nav-btn {
+        .logo { font-size: 1.2rem; color: var(--h1-color); }
+        .settings-btn {
             background-color: var(--btn-bg);
             color: var(--btn-text);
-            border: none;
-            padding: 8px 14px;
-            font-size: 13px;
-            font-weight: 600;
-            border-radius: 20px;
-            cursor: pointer;
             text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            -webkit-tap-highlight-color: transparent;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
         }
 
-        .content {
-            padding: 40px 20px;
-            text-align: center;
-        }
-
-        h1 { font-size: 2rem; margin-bottom: 15px; }
-        p { font-size: 1rem; line-height: 1.5; }
+        .main-container { padding: 20px 10px; }
+        h1 { font-size: 2rem; color: var(--h1-color); }
+        h2 { font-size: 1.3rem; color: var(--h2-color); }
+        
+        .btn-container { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 260px; margin: 0 auto; }
+        button { font-size: 1.2rem; padding: 12px; background-color: var(--btn-bg); color: var(--btn-text); border: none; border-radius: 8px; font-family: inherit; }
     </style>
-
     <script>
         const savedTheme = localStorage.getItem('selectedTheme');
-        if (savedTheme) {
-            document.documentElement.className = savedTheme;
-        }
+        if (savedTheme) { document.documentElement.className = savedTheme; }
     </script>
 </head>
 <body>
 
     <header>
         <div class="logo">My Site 📱</div>
-        <div class="nav-links">
-            <a href="math.html" class="nav-btn">🧮 Math</a>
-            <a href="chess.html" class="nav-btn">♟️ Chess</a>
-            <a href="editor.html" class="nav-btn">💻 Editor</a>
-            <a href="settings/index.html" class="nav-btn">⚙️ Settings</a>
-        </div>
+        <a href="settings/index.html" class="settings-btn">⚙️ Settings</a>
     </header>
 
-    <div class="content">
-        <h1>Mobile View</h1>
-        <p>This layout keeps your project buttons compact and easy to tap on smaller screens.</p>
+    <div class="main-container">
+        <h1>Welcome to my website!</h1>
+        <h2>Open this layout on your Desktop/PC or run it in full window settings to display all advanced interactive game layers!</h2>
+        <div class="btn-container">
+            <button>Math Questions 🧮</button>
+            <button>Chess ♟️</button>
+            <button>Code Editor 💻</button>
+        </div>
     </div>
 
 </body>
