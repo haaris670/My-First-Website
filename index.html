@@ -23,7 +23,6 @@
             --btn-text: #ffffff;
         }
 
-        /* --- GLOBAL STYLES --- */
         body {
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -32,7 +31,6 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
-        /* --- NAVIGATION BAR --- */
         nav {
             display: flex;
             justify-content: space-between;
@@ -47,8 +45,13 @@
             font-weight: bold;
         }
 
-        /* --- SETTINGS BUTTON --- */
-        .settings-btn {
+        .nav-links {
+            display: flex;
+            gap: 12px;
+        }
+
+        /* --- STYLED BUTTONS --- */
+        .nav-btn {
             background-color: var(--btn-bg);
             color: var(--btn-text);
             border: none;
@@ -60,15 +63,13 @@
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
             transition: transform 0.1s;
         }
 
-        .settings-btn:hover {
+        .nav-btn:hover {
             transform: scale(1.05);
         }
 
-        /* --- MAIN CONTENT --- */
         .content {
             max-width: 800px;
             margin: 60px auto;
@@ -76,19 +77,11 @@
             padding: 0 20px;
         }
 
-        h1 {
-            font-size: 3rem;
-            margin-bottom: 20px;
-        }
-
-        p {
-            font-size: 1.2rem;
-            line-height: 1.6;
-        }
+        h1 { font-size: 3rem; margin-bottom: 20px; }
+        p { font-size: 1.2rem; line-height: 1.6; }
     </style>
 
     <script>
-        // Check localStorage immediately before the body renders to prevent white flashes
         const savedTheme = localStorage.getItem('selectedTheme');
         if (savedTheme) {
             document.documentElement.className = savedTheme;
@@ -99,14 +92,17 @@
 
     <nav>
         <div class="logo">My Site</div>
-        <div>
-            <a href="settings/index.html" class="settings-btn">⚙️ Settings</a>
+        <div class="nav-links">
+            <a href="math.html" class="nav-btn">🧮 Math Questions</a>
+            <a href="chess.html" class="nav-btn">♟️ Chess</a>
+            <a href="editor.html" class="nav-btn">💻 Code Editor</a>
+            <a href="settings/index.html" class="nav-btn">⚙️ Settings</a>
         </div>
     </nav>
 
     <div class="content">
         <h1>Welcome to My Website</h1>
-        <p>This is the main PC view. Click the Settings gear icon in the top right corner to test switching between Light and Dark mode themes!</p>
+        <p>This is your main dashboard. Use the navigation menu above to play chess, practice math, code, or tweak your theme settings!</p>
     </div>
 
 </body>
