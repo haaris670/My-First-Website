@@ -1,1 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Themes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background: #f4f4f4;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+        .light-btn { background: #fff; color: #000; border: 1px solid #ccc; }
+        .dark-btn { background: #333; color: #fff; }
+    </style>
+</head>
+<body>
 
+    <h1>Select a Theme</h1>
+    <button class="light-btn" onclick="setTheme('light')">Light Mode</button>
+    <button class="dark-btn" onclick="setTheme('dark')">Dark Mode</button>
+
+    <script>
+        function setTheme(themeName) {
+            // This saves the theme choice inside the browser
+            localStorage.setItem('selectedTheme', themeName);
+            alert("Theme set to " + themeName + "! Now go back to your main page to see it.");
+        }
+    </script>
+</body>
+</html>
