@@ -5,22 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings - Themes</title>
     <style>
+        /* --- CSS THEME VARIABLES --- */
+        :root, .light {
+            --bg-color: #ffffff;
+            --text-color: #333333;
+        }
+        .dark {
+            --bg-color: #1a1a1a;
+            --text-color: #ffffff;
+        }
+
         body {
             font-family: Arial, sans-serif;
             text-align: center;
             padding: 50px;
-            background: #f4f4f4;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
         }
         button {
-            padding: 10px 20px;
+            padding: 12px 24px;
             margin: 10px;
             font-size: 16px;
+            font-weight: bold;
             cursor: pointer;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
         }
-        .light-btn { background: #fff; color: #000; border: 1px solid #ccc; }
+        .light-btn { background: #e2e8f0; color: #000; border: 1px solid #ccc; }
         .dark-btn { background: #333; color: #fff; }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            color: #0066cc;
+            text-decoration: none;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -29,11 +50,22 @@
     <button class="light-btn" onclick="setTheme('light')">Light Mode</button>
     <button class="dark-btn" onclick="setTheme('dark')">Dark Mode</button>
 
+    <br>
+    <a href="../index.html" class="back-link">← Back to Home</a>
+
     <script>
         function setTheme(themeName) {
-            // This saves the theme choice inside the browser
+            // 1. Save choice in browser memory
             localStorage.setItem('selectedTheme', themeName);
-            alert("Theme set to " + themeName + "! Now go back to your main page to see it.");
+            
+            // 2. Apply it immediately to this page so you can see it change
+            document.documentElement.className = themeName;
+        }
+
+        // Apply theme immediately on load if one was already saved
+        const savedTheme = localStorage.getItem('selectedTheme');
+        if (savedTheme) {
+            document.documentElement.className = savedTheme;
         }
     </script>
 </body>
