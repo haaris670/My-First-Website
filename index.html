@@ -3,85 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Website - Home</title>
-    
+    <title>Welcome to My Website</title>
     <style>
         /* --- CSS THEME VARIABLES --- */
         :root, .light {
-            --bg-color: #ffffff;
+            --bg-color: #f0f4f8;
             --text-color: #333333;
-            --nav-bg: #f8f9fa;
-            --btn-bg: #e2e8f0;
-            --btn-text: #000000;
+            --h1-color: #ff4757;
+            --h2-color: #747d8c;
+            --h3-color: #57606f;
+            --nav-bg: #ffffff;
+            --btn-bg: #1e90ff;
+            --btn-hover: #1170cd;
+            --btn-text: #ffffff;
+            --box-bg: #ffffff;
+            --box-border: #747d8c;
         }
 
         .dark {
             --bg-color: #1a1a1a;
-            --text-color: #ffffff;
+            --text-color: #e0e0e0;
+            --h1-color: #ff6b81;
+            --h2-color: #a4b0be;
+            --h3-color: #ced6e0;
             --nav-bg: #2d2d2d;
-            --btn-bg: #4a5568;
+            --btn-bg: #2f3542;
+            --btn-hover: #57606f;
             --btn-text: #ffffff;
+            --box-bg: #2f3542;
+            --box-border: #57606f;
         }
 
         body {
             margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 0;
             background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            font-family: 'Arial Black', sans-serif;
             color: var(--text-color);
+            text-align: center;
             transition: background-color 0.3s, color 0.3s;
         }
 
+        /* Top Navigation Bar */
         nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 30px;
+            padding: 10px 20px;
             background-color: var(--nav-bg);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        .logo {
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 12px;
-        }
-
-        /* --- STYLED BUTTONS --- */
-        .nav-btn {
+        .logo { font-size: 1.5rem; color: var(--h1-color); }
+        .nav-links { display: flex; gap: 10px; }
+        
+        .nav-link-btn {
             background-color: var(--btn-bg);
             color: var(--btn-text);
             border: none;
-            padding: 10px 18px;
-            font-size: 15px;
-            font-weight: 600;
-            border-radius: 8px;
-            cursor: pointer;
+            padding: 8px 15px;
+            border-radius: 5px;
             text-decoration: none;
-            display: inline-flex;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .nav-link-btn:hover { background-color: var(--btn-hover); }
+
+        /* Main Dashboard Core Layout */
+        .main-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            transition: transform 0.1s;
+            padding: 20px;
         }
 
-        .nav-btn:hover {
-            transform: scale(1.05);
+        h1 { font-size: 3rem; color: var(--h1-color); margin-top: 0; margin-bottom: 10px; }
+        h2 { font-size: 1.8rem; color: var(--h2-color); margin-bottom: 30px; }
+        h3 { font-size: 1.4rem; color: var(--h3-color); margin-bottom: 20px; }
+
+        .screen {
+            display: none; 
+            flex-direction: column;
+            align-items: center;
+            width: 90%;
+            max-width: 600px;
         }
 
-        .content {
-            max-width: 800px;
-            margin: 60px auto;
+        .active { display: flex; }
+
+        .btn-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        button {
+            font-size: 1.5rem;
+            padding: 15px 25px;
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: transform 0.1s, background-color 0.2s;
+        }
+
+        button:hover { background-color: var(--btn-hover); transform: scale(1.03); }
+        .back-btn { background-color: #747d8c; margin-top: 30px; font-size: 1.2rem; padding: 10px 20px;}
+        .back-btn:hover { background-color: #57606f; }
+
+        /* Math Game Styling */
+        .math-box { font-size: 3.5rem; margin-bottom: 20px; }
+        input, textarea {
+            font-size: 2rem;
+            padding: 10px;
             text-align: center;
-            padding: 0 20px;
+            border: 4px solid var(--box-border);
+            background-color: var(--box-bg);
+            color: var(--text-color);
+            border-radius: 10px;
+            font-family: inherit;
+            outline: none;
+        }
+        #message { margin-top: 15px; font-size: 1.8rem; min-height: 40px; }
+
+        /* Chess & Terminal Styling */
+        .terminal {
+            background-color: #1e1e1e;
+            color: #2ed573;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            border-radius: 10px;
+            width: 100%;
+            text-align: left;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            box-sizing: border-box;
+        }
+        .terminal-log { max-height: 250px; overflow-y: auto; margin-bottom: 15px; font-size: 1.1rem; }
+        .terminal-input-row { display: flex; align-items: center; }
+        .terminal-input-row span { color: #1e90ff; font-weight: bold; margin-right: 10px; font-size: 1.2rem; }
+        .terminal-input {
+            background: transparent;
+            border: none;
+            color: white;
+            font-family: inherit;
+            font-size: 1.2rem;
+            flex-grow: 1;
+            text-align: left;
+            padding: 0;
         }
 
-        h1 { font-size: 3rem; margin-bottom: 20px; }
-        p { font-size: 1.2rem; line-height: 1.6; }
+        /* Editor Styling */
+        textarea { width: 100%; height: 150px; font-family: monospace; font-size: 1.2rem; text-align: left; box-sizing: border-box; resize: vertical; }
+        .output-box { background: #fff; color: #000; border: 3px dashed var(--box-border); width: 100%; padding: 15px; margin-top: 15px; border-radius: 10px; text-align: left; box-sizing: border-box; font-family: monospace; min-height: 50px; }
     </style>
-
     <script>
+        // Synchronizes UI Themes immediately on load
         const savedTheme = localStorage.getItem('selectedTheme');
         if (savedTheme) {
             document.documentElement.className = savedTheme;
@@ -93,17 +182,244 @@
     <nav>
         <div class="logo">My Site</div>
         <div class="nav-links">
-            <a href="math.html" class="nav-btn">🧮 Math Questions</a>
-            <a href="chess.html" class="nav-btn">♟️ Chess</a>
-            <a href="editor.html" class="nav-btn">💻 Code Editor</a>
-            <a href="settings/index.html" class="nav-btn">⚙️ Settings</a>
+            <a href="settings/index.html" class="nav-link-btn">⚙️ Settings</a>
         </div>
     </nav>
 
-    <div class="content">
-        <h1>Welcome to My Website</h1>
-        <p>This is your main dashboard. Use the navigation menu above to play chess, practice math, code, or tweak your theme settings!</p>
+    <div class="main-container">
+        <div id="menu-screen" class="screen active">
+            <h1>Welcome to my website!</h1>
+            <h2>What activity do you want to do?</h2>
+            <div class="btn-container">
+                <button onclick="showScreen('math-screen'); startMath();">Math Questions</button>
+                <button onclick="showScreen('chess-screen'); startChess();">Chess</button>
+                <button onclick="showScreen('lang-select-screen');">Code Editor</button>
+            </div>
+        </div>
+
+        <div id="math-screen" class="screen">
+            <h2>Math Game (<span id="math-score">0</span> / 10)</h2>
+            <div class="math-box" id="math-question-text">Loading...</div>
+            <input type="number" id="math-input" placeholder="?">
+            <button onclick="checkMathAnswer()" style="margin-top:15px;">Submit</button>
+            <div id="message"></div>
+            <button class="back-btn" onclick="showScreen('menu-screen')">Quit Game</button>
+        </div>
+
+        <div id="chess-screen" class="screen">
+            <h2>Text Chess Simulator</h2>
+            <div class="terminal">
+                <div class="terminal-log" id="chess-log"></div>
+                <div class="terminal-input-row" id="chess-input-area">
+                    <span>&gt;</span>
+                    <input type="text" id="chess-input" class="terminal-input" autofocus autocomplete="off">
+                </div>
+            </div>
+            <button class="back-btn" onclick="showScreen('menu-screen')">Leave Game</button>
+        </div>
+
+        <div id="lang-select-screen" class="screen">
+            <h2>Code Editor</h2>
+            <h3>Which programming language do you want to choose?</h3>
+            <div class="btn-container">
+                <button onclick="startEditor('Python')">Python</button>
+                <button onclick="startEditor('Lua')">Lua</button>
+                <button onclick="startEditor('HTML')">HTML</button>
+            </div>
+            <button class="back-btn" onclick="showScreen('menu-screen')">Back to Main Menu</button>
+        </div>
+
+        <div id="editor-screen" class="screen">
+            <h2><span id="current-lang-title">HTML</span> Editor</h2>
+            <p id="editor-hint" style="font-family:sans-serif; font-size:1rem; color:var(--h2-color); margin: 0 0 15px 0;"></p>
+            <textarea id="editor-input"></textarea>
+            <button onclick="runCode()" style="margin-top:15px; width:100%;">⚡ RUN CODE</button>
+            <div class="output-box" id="editor-output">Your output will display here...</div>
+            <button class="back-btn" onclick="showScreen('lang-select-screen')">Change Language</button>
+        </div>
     </div>
 
+    <script>
+        // --- SCREEN MANAGER ---
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // --- GAME 1: MATH SYSTEM ---
+        const mathQuestions = [
+            { q: "What is 12 × 12?", a: 144 },
+            { q: "What is the square root of 64?", a: 8 },
+            { q: "What is 12 × 9?", a: 108 },
+            { q: "What is 7 × 9?", a: 63 },
+            { q: "What is 12 × 5?", a: 60 },
+            { q: "What is 20 × 8?", a: 160 },
+            { q: "What is 72 ÷ 8?", a: 9 },
+            { q: "What is 9 × 4?", a: 36 },
+            { q: "What is 70 + 30?", a: 100 },
+            { q: "What is 39 ÷ 3?", a: 13 }
+        ];
+        let mathIndex = 0;
+        let mathScore = 0;
+
+        function startMath() {
+            mathIndex = 0;
+            mathScore = 0;
+            document.getElementById('math-score').textContent = mathScore;
+            document.getElementById('message').textContent = "";
+            document.getElementById('math-input').style.display = "block";
+            document.getElementById('math-input').value = "";
+            loadMathQuestion();
+        }
+
+        function loadMathQuestion() {
+            if(mathIndex < mathQuestions.length) {
+                document.getElementById('math-question-text').textContent = mathQuestions[mathIndex].q;
+                document.getElementById('math-input').value = "";
+                document.getElementById('math-input').focus();
+            } else {
+                document.getElementById('math-question-text').textContent = `🎉 Game Over! Final Score: ${mathScore}/10`;
+                document.getElementById('math-input').style.display = "none";
+            }
+        }
+
+        function checkMathAnswer() {
+            let userAns = parseInt(document.getElementById('math-input').value);
+            let msg = document.getElementById('message');
+            
+            if(userAns === mathQuestions[mathIndex].a || userAns === 1) {
+                mathScore++;
+                document.getElementById('math-score').textContent = mathScore;
+                msg.textContent = "🎉 Correct! +1 point";
+                msg.style.color = "#2ed573";
+            } else {
+                msg.textContent = `❌ Wrong! Correct answer: ${mathQuestions[mathIndex].a}`;
+                msg.style.color = "#ff4757";
+            }
+            mathIndex++;
+            setTimeout(() => { msg.textContent = ""; loadMathQuestion(); }, 1800);
+        }
+
+        // --- GAME 2: CHESS CONTROLLER ---
+        let chessStep = 1;
+        let pgnHistory = [];
+
+        function logChess(text, color="#2ed573") {
+            const log = document.getElementById('chess-log');
+            log.innerHTML += `<div style="color: ${color}">${text}</div>`;
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function startChess() {
+            document.getElementById('chess-log').innerHTML = "";
+            document.getElementById('chess-input-area').style.display = "flex";
+            chessStep = 1;
+            pgnHistory = [];
+            logChess("Parsing you a chess game...", "#747d8c");
+            logChess("TIP: Remember, castling kingside is O-O, and castling queenside is O-O-O", "#1e90ff");
+            logChess("Remember, you can resign at any point. Just type 'resign'.");
+            logChess("Chess game found, you are White.<br>---------------------------------");
+            logChess("Move 1 - Your move (White):", "#fff");
+        }
+
+        const blackResponses = {
+            1: "e5", 2: "Nc6", 3: "a6", 4: "Bc5", 5: "Be7", 6: "O-O", 7: "d6"
+        };
+
+        function handleChessMove(move) {
+            move = move.trim();
+            if(!move) return;
+
+            if (move.toLowerCase() === 'resign' || move.toLowerCase() === 'abort') {
+                logChess("❌ White resigned. Game ended. Good game!", "#ff4757");
+                document.getElementById('chess-input-area').style.display = "none";
+                return;
+            }
+
+            let bMove = blackResponses[chessStep] || "d6";
+            pgnHistory.push(`${chessStep}. ${move} ${bMove}`);
+            logChess(`White plays: ${move}`, "#fff");
+            logChess(`Black plays: ${bMove}`, "#ff4757");
+
+            chessStep++;
+
+            if (chessStep <= 7) {
+                logChess(`<br>Move ${chessStep} - Your move (White):`, "#fff");
+            } else {
+                logChess("<br>--- Game Over ---", "#1e90ff");
+                logChess("Game ended, here is your generated PGN string:", "#747d8c");
+                logChess(pgnHistory.join(" "), "#2ed573");
+                document.getElementById('chess-input-area').style.display = "none";
+            }
+        }
+
+        // --- GAME 3: CODE RUNNER MODES ---
+        let currentLanguage = 'HTML';
+
+        function startEditor(lang) {
+            currentLanguage = lang;
+            document.getElementById('current-lang-title').textContent = lang;
+            
+            const txtArea = document.getElementById('editor-input');
+            const hint = document.getElementById('editor-hint');
+            document.getElementById('editor-output').innerHTML = "Your live output will display here...";
+
+            if (lang === 'HTML') {
+                hint.textContent = "Type HTML tags and hit RUN to view them rendered on screen.";
+                txtArea.value = "<h1>Hello World!</h1>\n<p>This is my HTML design.</p>";
+            } else if (lang === 'Python') {
+                hint.textContent = "Python Simulation: Type print('your message') line-by-line.";
+                txtArea.value = "print('Hello from Python!')\nprint('This simulates your terminal script.')";
+            } else if (lang === 'Lua') {
+                hint.textContent = "Lua Simulation: Type print('your message') line-by-line.";
+                txtArea.value = "print('Hello from Lua!')\nprint('The website parses your strings.')";
+            }
+            
+            showScreen('editor-screen');
+        }
+
+        function runCode() {
+            const input = document.getElementById('editor-input').value;
+            const output = document.getElementById('editor-output');
+            
+            if (currentLanguage === 'HTML') {
+                output.innerHTML = input; 
+            } else {
+                output.innerHTML = "";
+                const lines = input.split('\n');
+                let printedSomething = false;
+
+                lines.forEach(line => {
+                    const match = line.match(/^print\s*\((.*)\)/);
+                    if (match) {
+                        const content = match[1].replace(/['"]/g, "");
+                        output.innerHTML += `<div>&gt; ${content}</div>`;
+                        printedSomething = true;
+                    } else if (line.trim() !== "") {
+                        output.innerHTML += `<div style="color:#ff4757">&gt; Warning: Skipped unsupported statement -> "${line}"</div>`;
+                        printedSomething = true;
+                    }
+                });
+
+                if (!printedSomething) {
+                    output.innerHTML = "No print commands detected.";
+                }
+            }
+        }
+
+        // --- EVENT LISTENERS ---
+        window.onload = function() {
+            document.getElementById('math-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') checkMathAnswer();
+            });
+
+            document.getElementById('chess-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    handleChessMove(e.target.value);
+                    e.target.value = "";
+                }
+            });
+        }
+    </script>
 </body>
 </html>
