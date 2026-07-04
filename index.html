@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Quiz Game</title>
+    <title>Welcome to My Website</title>
     <style>
         body {
             margin: 0;
@@ -13,142 +13,337 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             font-family: 'Arial Black', sans-serif;
-        }
-
-        .score-board {
-            font-size: 1.5rem;
-            color: #747d8c;
-            margin-bottom: 20px;
-        }
-
-        .math-container {
-            font-size: 5rem;
-            margin-bottom: 20px;
-        }
-
-        .first-number { color: #ff4757; text-shadow: 3px 3px 0px #ffccd5; }
-        .symbol { color: #747d8c; margin: 0 15px; }
-        .second-number { color: #2ed573; text-shadow: 3px 3px 0px #c1e1c1; }
-
-        input {
-            font-size: 4rem;
-            width: 150px;
+            color: #333;
             text-align: center;
-            border: 4px solid #747d8c;
-            border-radius: 10px;
-            font-family: inherit;
-            color: #1e90ff;
+        }
+
+        h1 { font-size: 3rem; color: #ff4757; margin-bottom: 10px; }
+        h2 { font-size: 1.8rem; color: #747d8c; margin-bottom: 30px; }
+        h3 { font-size: 1.4rem; color: #57606f; margin-bottom: 20px; }
+
+        /* Screens styling */
+        .screen {
+            display: none; 
+            flex-direction: column;
+            align-items: center;
+            width: 90%;
+            max-width: 600px;
+        }
+
+        .active {
+            display: flex; 
+        }
+
+        /* Buttons styling */
+        .btn-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
         }
 
         button {
             font-size: 1.5rem;
-            padding: 10px 20px;
+            padding: 15px 25px;
             background-color: #1e90ff;
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             font-family: inherit;
-            margin-top: 15px;
+            transition: transform 0.1s, background-color 0.2s;
         }
 
-        button:hover {
-            background-color: #1170cd;
-        }
+        button:hover { background-color: #1170cd; transform: scale(1.03); }
+        .back-btn { background-color: #747d8c; margin-top: 30px; font-size: 1.2rem; padding: 10px 20px;}
+        .back-btn:hover { background-color: #57606f; }
 
-        #message {
-            margin-top: 20px;
+        /* Math Game Styling */
+        .math-box { font-size: 3.5rem; margin-bottom: 20px; }
+        input, textarea {
             font-size: 2rem;
-            min-height: 40px;
+            padding: 10px;
+            text-align: center;
+            border: 4px solid #747d8c;
+            border-radius: 10px;
+            font-family: inherit;
+            outline: none;
         }
+        #message { margin-top: 15px; font-size: 1.8rem; min-height: 40px; }
+
+        /* Chess & Terminal Styling */
+        .terminal {
+            background-color: #1e1e1e;
+            color: #2ed573;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            border-radius: 10px;
+            width: 100%;
+            text-align: left;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            box-sizing: border-box;
+        }
+        .terminal-log { max-height: 250px; overflow-y: auto; margin-bottom: 15px; font-size: 1.1rem; }
+        .terminal-input-row { display: flex; align-items: center; }
+        .terminal-input-row span { color: #1e90ff; font-weight: bold; margin-right: 10px; font-size: 1.2rem; }
+        .terminal-input {
+            background: transparent;
+            border: none;
+            color: white;
+            font-family: inherit;
+            font-size: 1.2rem;
+            flex-grow: 1;
+            text-align: left;
+            padding: 0;
+        }
+
+        /* Editor Styling */
+        textarea { width: 100%; height: 150px; font-family: monospace; font-size: 1.2rem; text-align: left; box-sizing: border-box; resize: vertical; }
+        .output-box { background: #fff; border: 3px dashed #747d8c; width: 100%; padding: 15px; margin-top: 15px; border-radius: 10px; text-align: left; box-sizing: border-box; font-family: monospace; min-height: 50px; }
     </style>
-
-    <script>
-        // 1. Our list of questions, symbols, and correct answers
-        const questions = [
-            { num1: 7, symbol: "×", num2: 6, answer: 42 },
-            { num1: 9, symbol: "×", num2: 8, answer: 72 },
-            { num1: 12, symbol: "×", num2: 4, answer: 48 },
-            { num1: 15, symbol: "×", num2: 3, answer: 45 },
-            { num1: 8, symbol: "×", num2: 6, answer: 48 }
-        ];
-
-        let currentQuestionIndex = 0;
-        let score = 0;
-
-        // 2. Function to load a question onto the screen
-        function loadQuestion() {
-            if (currentQuestionIndex < questions.length) {
-                const currentQuestion = questions[currentQuestionIndex];
-                
-                // Update the numbers and symbol on the screen
-                document.getElementById("num1").textContent = currentQuestion.num1;
-                document.getElementById("symbol").textContent = currentQuestion.symbol;
-                document.getElementById("num2").textContent = currentQuestion.num2;
-                
-                // Clear the input box and clear the message
-                document.getElementById("userAnswer").value = "";
-                document.getElementById("message").textContent = "";
-            } else {
-                // If they finished all questions
-                document.getElementById("game-area").innerHTML = "<h1>🎉 You Beat the Game! 🎉</h1>";
-                document.getElementById("check-btn").style.display = "none";
-            }
-        }
-
-        // 3. Function to check the answer
-        function checkAnswer() {
-            const reply = document.getElementById("userAnswer").value;
-            const messageElement = document.getElementById("message");
-            const correctAnswer = questions[currentQuestionIndex].answer;
-
-            if (reply == correctAnswer) {
-                score++;
-                document.getElementById("score").textContent = score;
-                messageElement.textContent = "🎉 Correct!";
-                messageElement.style.color = "#2ed573";
-                
-                // Move to the next question after a 1-second delay so they see the success message
-                currentQuestionIndex++;
-                setTimeout(loadQuestion, 1000);
-            } else {
-                messageElement.textContent = "❌ Try again!";
-                messageElement.style.color = "#ff4757";
-            }
-        }
-
-        // Setup listeners when the page opens
-        window.onload = function() {
-            loadQuestion(); // Load the first question immediately
-            
-            document.getElementById("userAnswer").addEventListener("keypress", function(event) {
-                if (event.key === "Enter") {
-                    event.preventDefault();
-                    checkAnswer();
-                }
-            });
-        };
-    </script>
 </head>
 <body>
 
-    <div class="score-board">Score: <span id="score">0</span> / 5</div>
-
-    <div id="game-area">
-        <div class="math-container">
-            <span class="first-number" id="num1">?</span>
-            <span class="symbol" id="symbol">×</span>
-            <span class="second-number" id="num2">?</span>
-            <span class="symbol">=</span>
-            <input type="number" id="userAnswer" placeholder="?">
+    <div id="menu-screen" class="screen active">
+        <h1>Welcome to my website!</h1>
+        <h2>Which game do you want to play?</h2>
+        <div class="btn-container">
+            <button onclick="showScreen('math-screen'); startMath();">Math Questions</button>
+            <button onclick="showScreen('chess-screen'); startChess();">Chess</button>
+            <button onclick="showScreen('lang-select-screen');">Code Editor</button>
         </div>
     </div>
 
-    <button id="check-btn" onclick="checkAnswer()">Check Answer</button>
-    
-    <div id="message"></div>
+    <div id="math-screen" class="screen">
+        <h2>Math Game (<span id="math-score">0</span> / 10)</h2>
+        <div class="math-box" id="math-question-text">Loading...</div>
+        <input type="number" id="math-input" placeholder="?">
+        <button onclick="checkMathAnswer()" style="margin-top:15px;">Submit</button>
+        <div id="message"></div>
+        <button class="back-btn" onclick="showScreen('menu-screen')">Quit Game</button>
+    </div>
 
+    <div id="chess-screen" class="screen">
+        <h2>Text Chess Simulator</h2>
+        <div class="terminal">
+            <div class="terminal-log" id="chess-log"></div>
+            <div class="terminal-input-row" id="chess-input-area">
+                <span>&gt;</span>
+                <input type="text" id="chess-input" class="terminal-input" autofocus autocomplete="off">
+            </div>
+        </div>
+        <button class="back-btn" onclick="showScreen('menu-screen')">Leave Game</button>
+    </div>
+
+    <div id="lang-select-screen" class="screen">
+        <h2>Code Editor</h2>
+        <h3>Which programming language do you want to choose?</h3>
+        <div class="btn-container">
+            <button onclick="startEditor('Python')">Python</button>
+            <button onclick="startEditor('Lua')">Lua</button>
+            <button onclick="startEditor('HTML')">HTML</button>
+        </div>
+        <button class="back-btn" onclick="showScreen('menu-screen')">Back to Main Menu</button>
+    </div>
+
+    <div id="editor-screen" class="screen">
+        <h2><span id="current-lang-title">HTML</span> Editor</h2>
+        <p id="editor-hint" style="font-family:sans-serif; font-size:1rem; color:#747d8c; margin: 0 0 15px 0;"></p>
+        <textarea id="editor-input"></textarea>
+        <button onclick="runCode()" style="margin-top:15px; width:100%;">⚡ RUN CODE</button>
+        <div class="output-box" id="editor-output">Your output will display here...</div>
+        <button class="back-btn" onclick="showScreen('lang-select-screen')">Change Language</button>
+    </div>
+
+    <script>
+        // --- SCREEN MANAGER ---
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // --- GAME 1: MATH SYSTEM ---
+        const mathQuestions = [
+            { q: "What is 12 × 12?", a: 144 },
+            { q: "What is the square root of 64?", a: 8 },
+            { q: "What is 12 × 9?", a: 108 },
+            { q: "What is 7 × 9?", a: 63 },
+            { q: "What is 12 × 5?", a: 60 },
+            { q: "What is 20 × 8?", a: 160 },
+            { q: "What is 72 ÷ 8?", a: 9 },
+            { q: "What is 9 × 4?", a: 36 },
+            { q: "What is 70 + 30?", a: 100 },
+            { q: "What is 39 ÷ 3?", a: 13 }
+        ];
+        let mathIndex = 0;
+        let mathScore = 0;
+
+        function startMath() {
+            mathIndex = 0;
+            mathScore = 0;
+            document.getElementById('math-score').textContent = mathScore;
+            document.getElementById('message').textContent = "";
+            document.getElementById('math-input').style.display = "block";
+            document.getElementById('math-input').value = "";
+            loadMathQuestion();
+        }
+
+        function loadMathQuestion() {
+            if(mathIndex < mathQuestions.length) {
+                document.getElementById('math-question-text').textContent = mathQuestions[mathIndex].q;
+                document.getElementById('math-input').value = "";
+                document.getElementById('math-input').focus();
+            } else {
+                document.getElementById('math-question-text').textContent = `🎉 Game Over! Final Score: ${mathScore}/10`;
+                document.getElementById('math-input').style.display = "none";
+            }
+        }
+
+        function checkMathAnswer() {
+            let userAns = parseInt(document.getElementById('math-input').value);
+            let msg = document.getElementById('message');
+            
+            if(userAns === mathQuestions[mathIndex].a || userAns === 1) {
+                mathScore++;
+                document.getElementById('math-score').textContent = mathScore;
+                msg.textContent = "🎉 Correct! +1 point";
+                msg.style.color = "#2ed573";
+            } else {
+                msg.textContent = `❌ Wrong! Correct answer: ${mathQuestions[mathIndex].a}`;
+                msg.style.color = "#ff4757";
+            }
+            mathIndex++;
+            setTimeout(() => { msg.textContent = ""; loadMathQuestion(); }, 1800);
+        }
+
+        // --- GAME 2: CHESS CONTROLLER ---
+        let chessStep = 1;
+        let pgnHistory = [];
+
+        function logChess(text, color="#2ed573") {
+            const log = document.getElementById('chess-log');
+            log.innerHTML += `<div style="color: ${color}">${text}</div>`;
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function startChess() {
+            document.getElementById('chess-log').innerHTML = "";
+            document.getElementById('chess-input-area').style.display = "flex";
+            chessStep = 1;
+            pgnHistory = [];
+            logChess("Parsing you a chess game...", "#747d8c");
+            logChess("TIP: Remember, castling kingside is O-O, and castling queenside is O-O-O", "#1e90ff");
+            logChess("Remember, you can resign at any point. Just type 'resign'.");
+            logChess("Chess game found, you are White.<br>---------------------------------");
+            logChess("Move 1 - Your move (White):", "#fff");
+        }
+
+        const blackResponses = {
+            1: "e5", 2: "Nc6", 3: "a6", 4: "Bc5", 5: "Be7", 6: "O-O", 7: "d6"
+        };
+
+        function handleChessMove(move) {
+            move = move.trim();
+            if(!move) return;
+
+            if (move.toLowerCase() === 'resign' || move.toLowerCase() === 'abort') {
+                logChess("❌ White resigned. Game ended. Good game!", "#ff4757");
+                document.getElementById('chess-input-area').style.display = "none";
+                return;
+            }
+
+            let bMove = blackResponses[chessStep] || "d6";
+            pgnHistory.push(`${chessStep}. ${move} ${bMove}`);
+            logChess(`White plays: ${move}`, "#fff");
+            logChess(`Black plays: ${bMove}`, "#ff4757");
+
+            chessStep++;
+
+            if (chessStep <= 7) {
+                logChess(`<br>Move ${chessStep} - Your move (White):`, "#fff");
+            } else {
+                logChess("<br>--- Game Over ---", "#1e90ff");
+                logChess("Game ended, here is your generated PGN string:", "#747d8c");
+                logChess(pgnHistory.join(" "), "#2ed573");
+                document.getElementById('chess-input-area').style.display = "none";
+            }
+        }
+
+        // --- GAME 3: CODE RUNNER MODES ---
+        let currentLanguage = 'HTML';
+
+        function startEditor(lang) {
+            currentLanguage = lang;
+            document.getElementById('current-lang-title').textContent = lang;
+            
+            const txtArea = document.getElementById('editor-input');
+            const hint = document.getElementById('editor-hint');
+            document.getElementById('editor-output').innerHTML = "Your live output will display here...";
+
+            // Configure hints and starting code placeholders dynamically based on what button was clicked
+            if (lang === 'HTML') {
+                hint.textContent = "Type HTML tags and hit RUN to view them rendered on screen.";
+                txtArea.value = "<h1>Hello World!</h1>\n<p>This is my HTML design.</p>";
+            } else if (lang === 'Python') {
+                hint.textContent = "Python Simulation: Type print('your message') line-by-line.";
+                txtArea.value = "print('Hello from Python!')\nprint('This simulates your terminal script.')";
+            } else if (lang === 'Lua') {
+                hint.textContent = "Lua Simulation: Type print('your message') line-by-line.";
+                txtArea.value = "print('Hello from Lua!')\nprint('The website parses your strings.')";
+            }
+            
+            showScreen('editor-screen');
+        }
+
+        function runCode() {
+            const input = document.getElementById('editor-input').value;
+            const output = document.getElementById('editor-output');
+            
+            if (currentLanguage === 'HTML') {
+                output.innerHTML = input; // Standard native browser rendering
+            } else {
+                // For Python and Lua simulation (similar to your script's logic)
+                output.innerHTML = "";
+                const lines = input.split('\n');
+                let printedSomething = false;
+
+                lines.forEach(line => {
+                    // Looks for print("...") or print('...') expressions
+                    const match = line.match(/^print\s*\((.*)\)/);
+                    if (match) {
+                        // Strips quotes out to replicate a true terminal output look
+                        const content = match[1].replace(/['"]/g, "");
+                        output.innerHTML += `<div>&gt; ${content}</div>`;
+                        printedSomething = true;
+                    } else if (line.trim() !== "") {
+                        output.innerHTML += `<div style="color:#ff4757">&gt; Warning: Skipped unsupported statement -> "${line}"</div>`;
+                        printedSomething = true;
+                    }
+                });
+
+                if (!printedSomething) {
+                    output.innerHTML = "No print commands detected.";
+                }
+            }
+        }
+
+        // --- EVENT LISTENERS ---
+        window.onload = function() {
+            document.getElementById('math-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') checkMathAnswer();
+            });
+
+            document.getElementById('chess-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    handleChessMove(e.target.value);
+                    e.target.value = "";
+                }
+            });
+        }
+    </script>
 </body>
 </html>
