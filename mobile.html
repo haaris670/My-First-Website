@@ -23,7 +23,6 @@
             --btn-text: #ffffff;
         }
 
-        /* --- GLOBAL MOBILE STYLES --- */
         body {
             margin: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -32,57 +31,54 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
-        /* --- MOBILE HEADER --- */
         header {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
-            padding: 12px 20px;
+            padding: 15px;
             background-color: var(--nav-bg);
             border-bottom: 1px solid rgba(0,0,0,0.1);
+            gap: 12px;
         }
 
         .logo {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
         }
 
-        /* --- MOBILE SETTINGS BUTTON --- */
-        .settings-btn {
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        /* --- MOBILE BUTTONS --- */
+        .nav-btn {
             background-color: var(--btn-bg);
             color: var(--btn-text);
             border: none;
             padding: 8px 14px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
-            border-radius: 20px; /* Rounded pill style for mobile */
+            border-radius: 20px;
             cursor: pointer;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            -webkit-tap-highlight-color: transparent; /* Smooth mobile tapping */
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* --- MOBILE CONTENT --- */
         .content {
             padding: 40px 20px;
             text-align: center;
         }
 
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 15px;
-        }
-
-        p {
-            font-size: 1rem;
-            line-height: 1.5;
-        }
+        h1 { font-size: 2rem; margin-bottom: 15px; }
+        p { font-size: 1rem; line-height: 1.5; }
     </style>
 
     <script>
-        // Reads the chosen theme instantly when loading on mobile
         const savedTheme = localStorage.getItem('selectedTheme');
         if (savedTheme) {
             document.documentElement.className = savedTheme;
@@ -93,14 +89,17 @@
 
     <header>
         <div class="logo">My Site 📱</div>
-        <div>
-            <a href="settings/index.html" class="settings-btn">⚙️ Settings</a>
+        <div class="nav-links">
+            <a href="math.html" class="nav-btn">🧮 Math</a>
+            <a href="chess.html" class="nav-btn">♟️ Chess</a>
+            <a href="editor.html" class="nav-btn">💻 Editor</a>
+            <a href="settings/index.html" class="nav-btn">⚙️ Settings</a>
         </div>
     </header>
 
     <div class="content">
         <h1>Mobile View</h1>
-        <p>This layout is optimized for your smartphone screen. Tap the Settings button above to change your site theme preferences!</p>
+        <p>This layout keeps your project buttons compact and easy to tap on smaller screens.</p>
     </div>
 
 </body>
