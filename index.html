@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Haaris670's Site - Home</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <style>
         /* --- CSS THEME VARIABLES --- */
         :root, .light {
@@ -177,6 +178,13 @@
             pointer-events: none;
         }
 
+        #chess-status {
+            font-size: 1.2rem;
+            margin-top: 10px;
+            font-weight: bold;
+            color: var(--h1-color);
+        }
+
         /* Editor Styling */
         textarea { width: 100%; height: 150px; font-family: monospace; font-size: 1.2rem; text-align: left; box-sizing: border-box; resize: vertical; }
         .output-box { background: #fff; color: #000; border: 3px dashed var(--box-border); width: 100%; padding: 15px; margin-top: 15px; border-radius: 10px; text-align: left; box-sizing: border-box; font-family: monospace; min-height: 50px; }
@@ -216,10 +224,11 @@
         </div>
 
         <div id="chess-screen" class="screen">
-            <h2>Interactive Chess Board</h2>
+            <h2>Interactive Chess Board (vs Bot)</h2>
             <div class="chessboard-wrapper">
                 <div class="chessboard-grid" id="board-grid"></div>
             </div>
+            <div id="chess-status">Your turn (White)</div>
             <button class="back-btn" onclick="showScreen('menu-screen')">Leave Game</button>
         </div>
 
@@ -296,43 +305,54 @@
             setTimeout(() => { msg.textContent = ""; loadMathQuestion(); }, 1800);
         }
 
-        // --- VISUAL CHESS DRIVER ---
-        let selectedSquare = null;
-        const initialBoard = [
-            ['b_rook', 'b_knight', 'b_bishop', 'b_queen', 'b_king', 'b_bishop', 'b_knight', 'b_rook'],
-            ['b_pawn', 'b_pawn', 'b_pawn', 'b_pawn', 'b_pawn', 'b_pawn', 'b_pawn', 'b_pawn'],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['w_pawn', 'w_pawn', 'w_pawn', 'w_pawn', 'w_pawn', 'w_pawn', 'w_pawn', 'w_pawn'],
-            ['w_rook', 'w_knight', 'w_bishop', 'w_queen', 'w_king', 'w_bishop', 'w_knight', 'w_rook']
-        ];
-        let currentBoardState = JSON.parse(JSON.stringify(initialBoard));
+        // --- VALIDATED CHESS DRIVER (VS BOT) ---
+        let game = null;
+        let selectedSquareName = null;
+
+        const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
         function initVisualChess() {
-            selectedSquare = null;
-            currentBoardState = JSON.parse(JSON.stringify(initialBoard));
+            game = new Chess(); // Instantiates chess rule enforcement engine
+            selectedSquareName = null;
+            document.getElementById('chess-status').textContent = "Your turn (White)";
             renderBoard();
         }
 
         function renderBoard() {
             const grid = document.getElementById('board-grid');
             grid.innerHTML = '';
+            
+            // Chess boards in Chess.js evaluate from 8th rank down to 1st rank
             for (let r = 0; r < 8; r++) {
                 for (let c = 0; c < 8; c++) {
                     const square = document.createElement('div');
                     square.classList.add('chess-square');
-                    square.dataset.row = r;
-                    square.dataset.col = c;
+                    
+                    const squareName = files[c] + (8 - r);
+                    square.dataset.squareName = squareName;
 
-                    const piece = currentBoardState[r][c];
+                    const piece = game.get(squareName);
                     if (piece) {
                         const img = document.createElement('img');
-                        img.src = `${piece}.png`;
+                        const prefix = piece.color === 'w' ? 'w_' : 'b_';
+                        let pieceType = '';
+                        switch(piece.type) {
+                            case 'p': pieceType = 'pawn'; break;
+                            case 'r': pieceType = 'rook'; break;
+                            case 'n': pieceType = 'knight'; break;
+                            case 'b': pieceType = 'bishop'; break;
+                            case 'q': pieceType = 'queen'; break;
+                            case 'k': pieceType = 'king'; break;
+                        }
+                        img.src = `${prefix}${pieceType}.png`;
                         img.classList.add('chess-piece');
                         square.appendChild(img);
                     }
+
+                    if (selectedSquareName === squareName) {
+                        square.classList.add('selected');
+                    }
+
                     square.addEventListener('click', handleSquareClick);
                     grid.appendChild(square);
                 }
@@ -340,28 +360,72 @@
         }
 
         function handleSquareClick(e) {
-            const sq = e.currentTarget;
-            const r = parseInt(sq.dataset.row);
-            const c = parseInt(sq.dataset.col);
+            if (game.turn() !== 'w' || game.game_over()) return; // Lock inputs during engine calculating
 
-            if (selectedSquare) {
-                const fromR = selectedSquare.row;
-                const fromC = selectedSquare.col;
-                if (fromR === r && fromC === c) {
-                    selectedSquare = null;
+            const sq = e.currentTarget;
+            const targetSquare = sq.dataset.squareName;
+
+            if (selectedSquareName) {
+                if (selectedSquareName === targetSquare) {
+                    selectedSquareName = null;
                     renderBoard();
                     return;
                 }
-                currentBoardState[r][c] = currentBoardState[fromR][fromC];
-                currentBoardState[fromR][fromC] = '';
-                selectedSquare = null;
-                renderBoard();
-            } else {
-                if (currentBoardState[r][c] !== '') {
-                    selectedSquare = { row: r, col: c };
+
+                // Attempt to execute move via legal validation engine
+                const moveResult = game.move({
+                    from: selectedSquareName,
+                    to: targetSquare,
+                    promotion: 'q' // Defaults pawn promotions to Queen for ease of use
+                });
+
+                if (moveResult) {
+                    selectedSquareName = null;
                     renderBoard();
-                    sq.classList.add('selected');
+                    checkGameStatus();
+
+                    if (!game.game_over()) {
+                        document.getElementById('chess-status').textContent = "Bot is thinking...";
+                        setTimeout(makeBotMove, 600); // Add natural delay for bot calculations
+                    }
+                } else {
+                    // Selection handling if clicking on another owned asset instead
+                    const pieceOnTarget = game.get(targetSquare);
+                    if (pieceOnTarget && pieceOnTarget.color === 'w') {
+                        selectedSquareName = targetSquare;
+                        renderBoard();
+                    }
                 }
+            } else {
+                const piece = game.get(targetSquare);
+                if (piece && piece.color === 'w') {
+                    selectedSquareName = targetSquare;
+                    renderBoard();
+                }
+            }
+        }
+
+        function makeBotMove() {
+            if (game.game_over()) return;
+
+            const moves = game.moves();
+            if (moves.length > 0) {
+                const randomMove = moves[Math.floor(Math.random() * moves.length)];
+                game.move(randomMove);
+                renderBoard();
+                checkGameStatus();
+            }
+        }
+
+        function checkGameStatus() {
+            if (game.in_checkmate()) {
+                document.getElementById('chess-status').textContent = game.turn() === 'w' ? "Checkmate! Bot wins." : "Checkmate! You win!";
+            } else if (game.in_draw() || game.in_stalemate() || game.in_threefold_repetition()) {
+                document.getElementById('chess-status').textContent = "Game Over: Draw Match";
+            } else if (game.in_check()) {
+                document.getElementById('chess-status').textContent = game.turn() === 'w' ? "Your turn (White) - Check!" : "Bot's turn (Black) - Check!";
+            } else {
+                document.getElementById('chess-status').textContent = game.turn() === 'w' ? "Your turn (White)" : "Bot's turn (Black)";
             }
         }
 
