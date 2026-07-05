@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Haaris670's Site - Mobile</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
     <style>
         /* --- CSS THEME VARIABLES --- */
         :root, .light {
@@ -130,39 +134,38 @@
 
         /* --- MOBILE CHESSBOARD STYLING --- */
         .chessboard-wrapper {
-            position: relative;
             width: 320px; 
-            height: 320px;
-            background-image: url('board.png');
-            background-size: cover;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
         }
 
-        .chessboard-grid {
-            display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            grid-template-rows: repeat(8, 1fr);
-            width: 100%;
-            height: 100%;
+        .chessboard-12b58 {
+            background-image: url('board.png') !important;
+            background-size: cover !important;
+        }
+        .square-55d63 {
+            background-color: transparent !important;
         }
 
-        .chess-square {
+        .history-controls {
             display: flex;
-            justify-content: center;
-            align-items: center;
-            -webkit-tap-highlight-color: transparent;
+            gap: 15px;
+            margin-top: 5px;
         }
 
-        .chess-square.selected {
-            background-color: rgba(255, 235, 59, 0.4) !important;
+        .history-btn {
+            font-size: 1.4rem;
+            padding: 6px 20px;
+            background-color: #57606f;
         }
 
-        .chess-piece {
-            width: 85%;
-            height: 85%;
-            object-fit: contain;
-            pointer-events: none;
+        #chess-status {
+            font-size: 1rem;
+            margin-top: 8px;
+            font-weight: bold;
+            color: var(--h1-color);
         }
 
         /* Editor Layout */
@@ -204,8 +207,15 @@
         <div id="chess-screen" class="screen">
             <h2>Interactive Chess</h2>
             <div class="chessboard-wrapper">
-                <div class="chessboard-grid" id="board-grid"></div>
+                <div id="board-grid" style="width: 100%"></div>
             </div>
+            
+            <div class="history-controls">
+                <button class="history-btn" onclick="navigateHistory(-1)">⬅️</button>
+                <button class="history-btn" onclick="navigateHistory(1)">➡️</button>
+            </div>
+
+            <div id="chess-status">Your turn (White)</div>
             <button class="back-btn" onclick="showScreen('menu-screen')">Leave Game</button>
         </div>
 
@@ -281,71 +291,120 @@
             setTimeout(() => { msg.textContent = ""; loadMathQuestion(); }, 1800);
         }
 
-        // --- MOBILE VISUAL CHESS DRIVER ---
-        let selectedSquare = null;
-        const initialBoard = [
-            ['b_rook', 'b_knight', 'b_bishop', 'b_queen', 'b_king', 'b_bishop', 'b_knight', 'b_rook'],
-            ['b_pawn', 'b_pawn', 'b_pawn', 'b_pawn', 'b_pawn', 'b_pawn', 'b_pawn', 'b_pawn'],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['w_pawn', 'w_pawn', 'w_pawn', 'w_pawn', 'w_pawn', 'w_pawn', 'w_pawn', 'w_pawn'],
-            ['w_rook', 'w_knight', 'w_bishop', 'w_queen', 'w_king', 'w_bishop', 'w_knight', 'w_rook']
-        ];
-        let currentBoardState = JSON.parse(JSON.stringify(initialBoard));
+        // --- ANIMATED CHESS GAME DRIVER (WITH MOVE REPLAY) ---
+        let board = null;
+        let game = null;
+        let moveHistory = [];
+        let currentHistoryIndex = -1;
 
-        function initVisualChess() {
-            selectedSquare = null;
-            currentBoardState = JSON.parse(JSON.stringify(initialBoard));
-            renderBoard();
+        function customPieceTheme(piece) {
+            let pType = '';
+            switch(piece.charAt(1).toLowerCase()) {
+                case 'p': pType = 'pawn'; break;
+                case 'r': pType = 'rook'; break;
+                case 'n': pType = 'knight'; break;
+                case 'b': pType = 'bishop'; break;
+                case 'q': pType = 'queen'; break;
+                case 'k': pType = 'king'; break;
+            }
+            return piece.charAt(0) + '_' + pType + '.png';
         }
 
-        function renderBoard() {
-            const grid = document.getElementById('board-grid');
-            grid.innerHTML = '';
-            for (let r = 0; r < 8; r++) {
-                for (let c = 0; c < 8; c++) {
-                    const square = document.createElement('div');
-                    square.classList.add('chess-square');
-                    square.dataset.row = r;
-                    square.dataset.col = c;
+        UX_CONFIG_PARAMS = {
+            draggable: true,
+            position: 'start',
+            pieceTheme: customPieceTheme,
+            onDragStart: onDragStart,
+            onDrop: onDrop,
+            onSnapEnd: onSnapEnd,
+            moveSpeed: 'fast',
+            snapbackSpeed: 200,
+            snapSpeed: 100
+        };
 
-                    const piece = currentBoardState[r][c];
-                    if (piece) {
-                        const img = document.createElement('img');
-                        img.src = `${piece}.png`;
-                        img.classList.add('chess-piece');
-                        square.appendChild(img);
-                    }
-                    square.addEventListener('click', handleSquareClick);
-                    grid.appendChild(square);
-                }
+        function initVisualChess() {
+            game = new Chess();
+            moveHistory = [];
+            currentHistoryIndex = -1;
+            document.getElementById('chess-status').textContent = "Your turn (White)";
+            
+            board = Chessboard('board-grid', UX_CONFIG_PARAMS);
+            setTimeout(() => { board.resize(); }, 100);
+        }
+
+        function onDragStart(source, piece, position, orientation) {
+            if (game.game_over() || currentHistoryIndex !== moveHistory.length - 1) return false;
+            if (piece.search(/^b/) !== -1) return false;
+        }
+
+        function onDrop(source, target) {
+            const move = game.move({
+                from: source,
+                to: target,
+                promotion: 'q'
+            });
+
+            if (move === null) return 'snapback';
+
+            moveHistory.push(move.san);
+            currentHistoryIndex = moveHistory.length - 1;
+
+            checkGameStatus();
+
+            if (!game.game_over()) {
+                document.getElementById('chess-status').textContent = "Bot is thinking...";
+                window.setTimeout(makeBotMove, 450);
             }
         }
 
-        function handleSquareClick(e) {
-            const sq = e.currentTarget;
-            const r = parseInt(sq.dataset.row);
-            const c = parseInt(sq.dataset.col);
+        function onSnapEnd() {
+            board.position(game.fen());
+        }
 
-            if (selectedSquare) {
-                const fromR = selectedSquare.row;
-                const fromC = selectedSquare.col;
-                if (fromR === r && fromC === c) {
-                    selectedSquare = null;
-                    renderBoard();
-                    return;
-                }
-                currentBoardState[r][c] = currentBoardState[fromR][fromC];
-                currentBoardState[fromR][fromC] = '';
-                selectedSquare = null;
-                renderBoard();
+        function makeBotMove() {
+            const possibleMoves = game.moves();
+            if (possibleMoves.length === 0) return;
+
+            const randomIdx = Math.floor(Math.random() * possibleMoves.length);
+            const move = game.move(possibleMoves[randomIdx]);
+            
+            moveHistory.push(move.san);
+            currentHistoryIndex = moveHistory.length - 1;
+
+            board.position(game.fen());
+            checkGameStatus();
+        }
+
+        function checkGameStatus() {
+            if (game.in_checkmate()) {
+                document.getElementById('chess-status').textContent = game.turn() === 'w' ? "Checkmate! Bot wins." : "Checkmate! You win!";
+            } else if (game.in_draw() || game.in_stalemate()) {
+                document.getElementById('chess-status').textContent = "Game Over: Draw Match";
+            } else if (game.in_check()) {
+                document.getElementById('chess-status').textContent = game.turn() === 'w' ? "Your turn (White) - Check!" : "Bot's turn (Black) - Check!";
             } else {
-                if (currentBoardState[r][c] !== '') {
-                    selectedSquare = { row: r, col: c };
-                    renderBoard();
-                    sq.classList.add('selected');
+                document.getElementById('chess-status').textContent = game.turn() === 'w' ? "Your turn (White)" : "Bot's turn (Black)";
+            }
+        }
+
+        function navigateHistory(direction) {
+            if (moveHistory.length === 0) return;
+
+            let targetIndex = currentHistoryIndex + direction;
+            if (targetIndex >= -1 && targetIndex < moveHistory.length) {
+                currentHistoryIndex = targetIndex;
+                
+                const historyGame = new Chess();
+                for (let i = 0; i <= currentHistoryIndex; i++) {
+                    historyGame.move(moveHistory[i]);
+                }
+                
+                board.position(historyGame.fen(), true);
+                
+                if (currentHistoryIndex !== moveHistory.length - 1) {
+                    document.getElementById('chess-status').textContent = `Reviewing Move ${currentHistoryIndex + 1}/${moveHistory.length}`;
+                } else {
+                    checkGameStatus();
                 }
             }
         }
