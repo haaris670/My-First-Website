@@ -149,31 +149,40 @@
             margin-bottom: 15px;
         }
 
-        /* Overlay board.png directly across the background canvas engine */
         .cb-board-3db4d {
             background-image: url('board.png') !important;
             background-size: cover !important;
         }
-        /* Make internal system colors clear */
         .cb-square-a83d6 {
             background-color: transparent !important;
         }
 
-        .history-controls {
+        .game-controls {
             display: flex;
-            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
             margin-top: 10px;
+            max-width: 440px;
         }
 
-        .history-btn {
-            font-size: 1.8rem;
-            padding: 8px 25px;
+        .control-btn {
+            font-size: 1.1rem;
+            padding: 8px 16px;
+            border-radius: 6px;
             background-color: #57606f;
         }
+        .control-btn:hover {
+            background-color: #3d4653;
+        }
+        .danger-btn { background-color: #ff4757; }
+        .danger-btn:hover { background-color: #ff2a3b; }
+        .warn-btn { background-color: #ffa502; }
+        .warn-btn:hover { background-color: #ff9200; }
 
         #chess-status {
             font-size: 1.2rem;
-            margin-top: 10px;
+            margin-top: 15px;
             font-weight: bold;
             color: var(--h1-color);
         }
@@ -222,9 +231,12 @@
                 <div id="board-grid" style="width: 100%"></div>
             </div>
             
-            <div class="history-controls">
-                <button class="history-btn" onclick="navigateHistory(-1)">⬅️</button>
-                <button class="history-btn" onclick="navigateHistory(1)">➡️</button>
+            <div class="game-controls">
+                <button class="control-btn" onclick="navigateHistory(-1)" title="Move Back">⬅️</button>
+                <button class="control-btn" onclick="navigateHistory(1)" title="Move Forward">➡️</button>
+                <button class="control-btn warn-btn" onclick="handleTakeback()">↩️ Takeback</button>
+                <button class="control-btn" onclick="handleDrawOffer()">🤝 Offer Draw</button>
+                <button class="control-btn danger-btn" onclick="handleResign()">🏳️ Resign</button>
             </div>
 
             <div id="chess-status">Your turn (White)</div>
@@ -309,6 +321,7 @@
         let game = null;
         let moveHistory = [];
         let currentHistoryIndex = -1;
+        let customGameOverState = false;
 
         function customPieceTheme(piece) {
             let pType = '';
@@ -327,6 +340,7 @@
             game = new Chess();
             moveHistory = [];
             currentHistoryIndex = -1;
+            customGameOverState = false;
             document.getElementById('chess-status').textContent = "Your turn (White)";
 
             const config = {
@@ -343,7 +357,7 @@
         }
 
         function onDragStart(params) {
-            if (game.game_over() || currentHistoryIndex !== moveHistory.length - 1) return false;
+            if (game.game_over() || customGameOverState || currentHistoryIndex !== moveHistory.length - 1) return false;
             if (params.piece.search(/^b/) !== -1) return false;
         }
 
@@ -361,13 +375,15 @@
 
             checkGameStatus();
 
-            if (!game.game_over()) {
+            if (!game.game_over() && !customGameOverState) {
                 document.getElementById('chess-status').textContent = "Bot is thinking...";
                 window.setTimeout(makeBotMove, 500);
             }
         }
 
         function makeBotMove() {
+            if (game.game_over() || customGameOverState) return;
+
             const possibleMoves = game.moves();
             if (possibleMoves.length === 0) return;
 
@@ -377,11 +393,13 @@
             moveHistory.push(move.san);
             currentHistoryIndex = moveHistory.length - 1;
 
-            board.position(game.fen(), true); // Explicitly triggers smooth CSS animations
+            board.position(game.fen(), true); 
             checkGameStatus();
         }
 
         function checkGameStatus() {
+            if (customGameOverState) return;
+
             if (game.in_checkmate()) {
                 document.getElementById('chess-status').textContent = game.turn() === 'w' ? "Checkmate! Bot wins." : "Checkmate! You win!";
             } else if (game.in_draw() || game.in_stalemate()) {
@@ -390,6 +408,50 @@
                 document.getElementById('chess-status').textContent = game.turn() === 'w' ? "Your turn (White) - Check!" : "Bot's turn (Black) - Check!";
             } else {
                 document.getElementById('chess-status').textContent = game.turn() === 'w' ? "Your turn (White)" : "Bot's turn (Black)";
+            }
+        }
+
+        // --- GAME INTERACTION CONTROLS ---
+        function handleTakeback() {
+            if (customGameOverState) return;
+            
+            // Revert back to historical state before player and bot's last action frames
+            if (moveHistory.length >= 2) {
+                game.undo(); // Undo Bot Move
+                game.undo(); // Undo Your Move
+                moveHistory.pop();
+                moveHistory.pop();
+                currentHistoryIndex = moveHistory.length - 1;
+                
+                board.position(game.fen(), true);
+                checkGameStatus();
+            } else if (moveHistory.length === 1) {
+                // If only one move has occurred
+                game.undo();
+                moveHistory.pop();
+                currentHistoryIndex = moveHistory.length - 1;
+                board.position(game.fen(), true);
+                checkGameStatus();
+            }
+        }
+
+        function handleResign() {
+            if (game.game_over() || customGameOverState) return;
+            customGameOverState = true;
+            document.getElementById('chess-status').textContent = "🏳️ You resigned. Bot wins!";
+        }
+
+        function handleDrawOffer() {
+            if (game.game_over() || customGameOverState) return;
+            
+            // Simulated 50% bot accept/decline algorithm
+            const botAccepts = Math.random() > 0.5;
+            if (botAccepts) {
+                customGameOverState = true;
+                document.getElementById('chess-status').textContent = "🤝 Bot accepted the draw offer. Game Over!";
+            } else {
+                document.getElementById('chess-status').textContent = "❌ Bot declined the draw offer. Keep playing!";
+                setTimeout(checkGameStatus, 2000);
             }
         }
 
