@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Haaris670's Site - Home</title>
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
-    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chrisoakman/chessboard2@0.5.0/dist/chessboard2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@chrisoakman/chessboard2@0.5.0/dist/chessboard2.min.js"></script>
     <style>
         /* --- CSS THEME VARIABLES --- */
         :root, .light {
@@ -150,13 +149,13 @@
             margin-bottom: 15px;
         }
 
-        /* Remap Chessboard.js to use your green board.png */
-        .chessboard-12b58 {
+        /* Overlay board.png directly across the background canvas engine */
+        .cb-board-3db4d {
             background-image: url('board.png') !important;
             background-size: cover !important;
         }
-        /* Make default squares invisible so your custom board shows underneath */
-        .square-55d63 {
+        /* Make internal system colors clear */
+        .cb-square-a83d6 {
             background-color: transparent !important;
         }
 
@@ -305,13 +304,12 @@
             setTimeout(() => { msg.textContent = ""; loadMathQuestion(); }, 1800);
         }
 
-        // --- ANIMATED CHESS GAME DRIVER (WITH MOVE REPLAY) ---
+        // --- NATIVE ANIMATED CHESS ENGINE ---
         let board = null;
         let game = null;
         let moveHistory = [];
         let currentHistoryIndex = -1;
 
-        // Custom piece theme rule mapping to load your repository png files
         function customPieceTheme(piece) {
             let pType = '';
             switch(piece.charAt(1).toLowerCase()) {
@@ -336,50 +334,37 @@
                 position: 'start',
                 pieceTheme: customPieceTheme,
                 onDragStart: onDragStart,
-                onDrop: onDrop,
-                onSnapEnd: onSnapEnd,
-                moveSpeed: 'fast',
-                snapbackSpeed: 200,
-                snapSpeed: 100
+                onDrop: onDrop
             };
             
-            board = Chessboard('board-grid', config);
-            setTimeout(() => { board.resize(); }, 100);
+            const container = document.getElementById('board-grid');
+            container.innerHTML = ''; 
+            board = Chessboard2(container, config);
         }
 
-        function onDragStart(source, piece, position, orientation) {
-            // Freeze interactions if analyzing previous historical frame or game over
+        function onDragStart(params) {
             if (game.game_over() || currentHistoryIndex !== moveHistory.length - 1) return false;
-            // Prevent picking up Black pieces
-            if (piece.search(/^b/) !== -1) return false;
+            if (params.piece.search(/^b/) !== -1) return false;
         }
 
-        function onDrop(source, target) {
-            // Attempt to make move via validation engine
+        function onDrop(params) {
             const move = game.move({
-                from: source,
-                to: target,
+                from: params.source,
+                to: params.target,
                 promotion: 'q'
             });
 
-            // If move is illegal, return to original square
             if (move === null) return 'snapback';
 
-            // Add move to history tracking
             moveHistory.push(move.san);
             currentHistoryIndex = moveHistory.length - 1;
 
             checkGameStatus();
 
-            // Trigger bot response after player turn completes
             if (!game.game_over()) {
                 document.getElementById('chess-status').textContent = "Bot is thinking...";
-                window.setTimeout(makeBotMove, 450);
+                window.setTimeout(makeBotMove, 500);
             }
-        }
-
-        function onSnapEnd() {
-            board.position(game.fen());
         }
 
         function makeBotMove() {
@@ -392,7 +377,7 @@
             moveHistory.push(move.san);
             currentHistoryIndex = moveHistory.length - 1;
 
-            board.position(game.fen());
+            board.position(game.fen(), true); // Explicitly triggers smooth CSS animations
             checkGameStatus();
         }
 
@@ -408,7 +393,7 @@
             }
         }
 
-        // --- TIMELINE NAVIGATOR (REPLAY MOVES) ---
+        // --- KEYBINDS & HISTORY NAVIGATION CONTROLLER ---
         function navigateHistory(direction) {
             if (moveHistory.length === 0) return;
 
@@ -416,13 +401,11 @@
             if (targetIndex >= -1 && targetIndex < moveHistory.length) {
                 currentHistoryIndex = targetIndex;
                 
-                // Rebuild board position state up to current timeline checkpoint
                 const historyGame = new Chess();
                 for (let i = 0; i <= currentHistoryIndex; i++) {
                     historyGame.move(moveHistory[i]);
                 }
                 
-                // Update display state with slide animations active
                 board.position(historyGame.fen(), true);
                 
                 if (currentHistoryIndex !== moveHistory.length - 1) {
@@ -433,9 +416,7 @@
             }
         }
 
-        // --- ARROW KEYBINDS CONTROLLER ---
         window.addEventListener('keydown', function(e) {
-            // Filter actions to ensure timeline navigation only activates while in chess viewport
             if (document.getElementById('chess-screen').classList.contains('active')) {
                 if (e.key === 'ArrowLeft') {
                     navigateHistory(-1);
