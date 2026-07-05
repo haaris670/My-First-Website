@@ -148,21 +148,28 @@
             background-color: transparent !important;
         }
 
-        .history-controls {
+        .game-controls {
             display: flex;
-            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
             margin-top: 5px;
+            width: 100%;
+            max-width: 320px;
         }
 
-        .history-btn {
-            font-size: 1.4rem;
-            padding: 6px 20px;
+        .control-btn {
+            font-size: 0.9rem;
+            padding: 6px 12px;
+            border-radius: 5px;
             background-color: #57606f;
         }
+        .danger-btn { background-color: #ff4757; }
+        .warn-btn { background-color: #ffa502; }
 
         #chess-status {
             font-size: 1rem;
-            margin-top: 8px;
+            margin-top: 12px;
             font-weight: bold;
             color: var(--h1-color);
         }
@@ -209,9 +216,12 @@
                 <div id="board-grid" style="width: 100%"></div>
             </div>
             
-            <div class="history-controls">
-                <button class="history-btn" onclick="navigateHistory(-1)">⬅️</button>
-                <button class="history-btn" onclick="navigateHistory(1)">➡️</button>
+            <div class="game-controls">
+                <button class="control-btn" onclick="navigateHistory(-1)">⬅️</button>
+                <button class="control-btn" onclick="navigateHistory(1)">➡️</button>
+                <button class="control-btn warn-btn" onclick="handleTakeback()">↩️ Undo</button>
+                <button class="control-btn" onclick="handleDrawOffer()">🤝 Draw</button>
+                <button class="control-btn danger-btn" onclick="handleResign()">🏳️ Resign</button>
             </div>
 
             <div id="chess-status">Your turn (White)</div>
@@ -295,6 +305,7 @@
         let game = null;
         let moveHistory = [];
         let currentHistoryIndex = -1;
+        let customGameOverState = false;
 
         function customPieceTheme(piece) {
             let pType = '';
@@ -313,6 +324,7 @@
             game = new Chess();
             moveHistory = [];
             currentHistoryIndex = -1;
+            customGameOverState = false;
             document.getElementById('chess-status').textContent = "Your turn (White)";
             
             const container = document.getElementById('board-grid');
@@ -327,7 +339,7 @@
         }
 
         function onDragStart(params) {
-            if (game.game_over() || currentHistoryIndex !== moveHistory.length - 1) return false;
+            if (game.game_over() || customGameOverState || currentHistoryIndex !== moveHistory.length - 1) return false;
             if (params.piece.search(/^b/) !== -1) return false;
         }
 
@@ -345,13 +357,15 @@
 
             checkGameStatus();
 
-            if (!game.game_over()) {
+            if (!game.game_over() && !customGameOverState) {
                 document.getElementById('chess-status').textContent = "Bot is thinking...";
                 window.setTimeout(makeBotMove, 500);
             }
         }
 
         function makeBotMove() {
+            if (game.game_over() || customGameOverState) return;
+
             const possibleMoves = game.moves();
             if (possibleMoves.length === 0) return;
 
@@ -366,6 +380,8 @@
         }
 
         function checkGameStatus() {
+            if (customGameOverState) return;
+
             if (game.in_checkmate()) {
                 document.getElementById('chess-status').textContent = game.turn() === 'w' ? "Checkmate! Bot wins." : "Checkmate! You win!";
             } else if (game.in_draw() || game.in_stalemate()) {
@@ -374,6 +390,47 @@
                 document.getElementById('chess-status').textContent = game.turn() === 'w' ? "Your turn (White) - Check!" : "Bot's turn (Black) - Check!";
             } else {
                 document.getElementById('chess-status').textContent = game.turn() === 'w' ? "Your turn (White)" : "Bot's turn (Black)";
+            }
+        }
+
+        // --- GAME INTERACTION CONTROLS ---
+        function handleTakeback() {
+            if (customGameOverState) return;
+            
+            if (moveHistory.length >= 2) {
+                game.undo();
+                game.undo();
+                moveHistory.pop();
+                moveHistory.pop();
+                currentHistoryIndex = moveHistory.length - 1;
+                
+                board.position(game.fen(), true);
+                checkGameStatus();
+            } else if (moveHistory.length === 1) {
+                game.undo();
+                moveHistory.pop();
+                currentHistoryIndex = moveHistory.length - 1;
+                board.position(game.fen(), true);
+                checkGameStatus();
+            }
+        }
+
+        function handleResign() {
+            if (game.game_over() || customGameOverState) return;
+            customGameOverState = true;
+            document.getElementById('chess-status').textContent = "🏳️ You resigned. Bot wins!";
+        }
+
+        function handleDrawOffer() {
+            if (game.game_over() || customGameOverState) return;
+            
+            const botAccepts = Math.random() > 0.5;
+            if (botAccepts) {
+                customGameOverState = true;
+                document.getElementById('chess-status').textContent = "🤝 Draw accepted by Bot!";
+            } else {
+                document.getElementById('chess-status').textContent = "❌ Bot declined draw!";
+                setTimeout(checkGameStatus, 2000);
             }
         }
 
@@ -392,7 +449,7 @@
                 board.position(historyGame.fen(), true);
                 
                 if (currentHistoryIndex !== moveHistory.length - 1) {
-                    document.getElementById('chess-status').textContent = `Reviewing Move ${currentHistoryIndex + 1}/${moveHistory.length}`;
+                    document.getElementById('chess-status').textContent = `Move ${currentHistoryIndex + 1}/${moveHistory.length}`;
                 } else {
                     checkGameStatus();
                 }
