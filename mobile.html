@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Haaris670's Site - Mobile</title>
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
-    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chrisoakman/chessboard2@0.5.0/dist/chessboard2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@chrisoakman/chessboard2@0.5.0/dist/chessboard2.min.js"></script>
     <style>
         /* --- CSS THEME VARIABLES --- */
         :root, .light {
@@ -141,11 +140,11 @@
             margin-bottom: 10px;
         }
 
-        .chessboard-12b58 {
+        .cb-board-3db4d {
             background-image: url('board.png') !important;
             background-size: cover !important;
         }
-        .square-55d63 {
+        .cb-square-a83d6 {
             background-color: transparent !important;
         }
 
@@ -291,7 +290,7 @@
             setTimeout(() => { msg.textContent = ""; loadMathQuestion(); }, 1800);
         }
 
-        // --- ANIMATED CHESS GAME DRIVER (WITH MOVE REPLAY) ---
+        // --- NATIVE ANIMATED CHESS ENGINE ---
         let board = null;
         let game = null;
         let moveHistory = [];
@@ -310,37 +309,32 @@
             return piece.charAt(0) + '_' + pType + '.png';
         }
 
-        UX_CONFIG_PARAMS = {
-            draggable: true,
-            position: 'start',
-            pieceTheme: customPieceTheme,
-            onDragStart: onDragStart,
-            onDrop: onDrop,
-            onSnapEnd: onSnapEnd,
-            moveSpeed: 'fast',
-            snapbackSpeed: 200,
-            snapSpeed: 100
-        };
-
         function initVisualChess() {
             game = new Chess();
             moveHistory = [];
             currentHistoryIndex = -1;
             document.getElementById('chess-status').textContent = "Your turn (White)";
             
-            board = Chessboard('board-grid', UX_CONFIG_PARAMS);
-            setTimeout(() => { board.resize(); }, 100);
+            const container = document.getElementById('board-grid');
+            container.innerHTML = '';
+            board = Chessboard2(container, {
+                draggable: true,
+                position: 'start',
+                pieceTheme: customPieceTheme,
+                onDragStart: onDragStart,
+                onDrop: onDrop
+            });
         }
 
-        function onDragStart(source, piece, position, orientation) {
+        function onDragStart(params) {
             if (game.game_over() || currentHistoryIndex !== moveHistory.length - 1) return false;
-            if (piece.search(/^b/) !== -1) return false;
+            if (params.piece.search(/^b/) !== -1) return false;
         }
 
-        function onDrop(source, target) {
+        function onDrop(params) {
             const move = game.move({
-                from: source,
-                to: target,
+                from: params.source,
+                to: params.target,
                 promotion: 'q'
             });
 
@@ -353,12 +347,8 @@
 
             if (!game.game_over()) {
                 document.getElementById('chess-status').textContent = "Bot is thinking...";
-                window.setTimeout(makeBotMove, 450);
+                window.setTimeout(makeBotMove, 500);
             }
-        }
-
-        function onSnapEnd() {
-            board.position(game.fen());
         }
 
         function makeBotMove() {
@@ -371,7 +361,7 @@
             moveHistory.push(move.san);
             currentHistoryIndex = moveHistory.length - 1;
 
-            board.position(game.fen());
+            board.position(game.fen(), true);
             checkGameStatus();
         }
 
