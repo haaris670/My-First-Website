@@ -1,889 +1,3609 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Haaris670's Site</title>
 
-    <!-- Libraries -->
+
+    <!-- ================= LIBRARIES ================= -->
+
+    <!-- Chess.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chrisoakman/chessboard2@0.5.0/dist/chessboard2.min.css">
+
+    <!-- Chessboard2 -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/@chrisoakman/chessboard2@0.5.0/dist/chessboard2.min.css">
+
     <script src="https://cdn.jsdelivr.net/npm/@chrisoakman/chessboard2@0.5.0/dist/chessboard2.min.js"></script>
-    
-    <!-- Python (Pyodide) -->
+
+    <!-- Python / Pyodide -->
     <script src="https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js"></script>
-    
-    <!-- Lua (Fengari) -->
+
+    <!-- Lua / Fengari -->
     <script src="https://unpkg.com/fengari-web@0.1.4/dist/fengari-web.js"></script>
 
+
+    <!-- ================= CSS ================= -->
+
     <style>
-        :root, .light {
+
+        :root,
+        .light {
+
             --bg-color: #f0f4f8;
             --text-color: #333333;
+
             --h1-color: #ff4757;
             --h2-color: #747d8c;
             --h3-color: #57606f;
+
             --nav-bg: #ffffff;
+
             --btn-bg: #1e90ff;
             --btn-hover: #1170cd;
             --btn-text: #ffffff;
+
             --box-bg: #ffffff;
             --box-border: #747d8c;
+
             --card-bg: #ffffff;
+
             --feedback-correct: #2ed573;
             --feedback-wrong: #ff4757;
         }
 
+
         .dark {
+
             --bg-color: #1a1a1a;
             --text-color: #e0e0e0;
+
             --h1-color: #ff6b81;
             --h2-color: #a4b0be;
             --h3-color: #ced6e0;
+
             --nav-bg: #2d2d2d;
+
             --btn-bg: #2f3542;
             --btn-hover: #57606f;
             --btn-text: #ffffff;
+
             --box-bg: #2f3542;
             --box-border: #57606f;
+
             --card-bg: #2f3542;
+
             --feedback-correct: #2ed573;
             --feedback-wrong: #ff4757;
         }
 
-        * { box-sizing: border-box; }
 
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-color);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            font-family: 'Arial Black', Arial, sans-serif;
-            color: var(--text-color);
-            text-align: center;
-            transition: background-color 0.3s, color 0.3s;
+        * {
+            box-sizing: border-box;
         }
 
-        nav {
+
+        body {
+
+            margin: 0;
+            padding: 0;
+
+            background-color: var(--bg-color);
+            color: var(--text-color);
+
             display: flex;
+            flex-direction: column;
+
+            min-height: 100vh;
+
+            font-family: 'Arial Black', Arial, sans-serif;
+
+            text-align: center;
+
+            transition:
+                background-color 0.3s,
+                color 0.3s;
+        }
+
+
+        /* ================= NAVBAR ================= */
+
+        nav {
+
+            display: flex;
+
             justify-content: space-between;
             align-items: center;
+
             padding: 12px 20px;
+
             background-color: var(--nav-bg);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+            box-shadow:
+                0 2px 8px rgba(0,0,0,0.1);
+
             width: 100%;
         }
 
-        .logo { font-size: 1.4rem; color: var(--h1-color); }
-        .nav-links { display: flex; gap: 10px; }
+
+        .logo {
+
+            font-size: 1.4rem;
+
+            color: var(--h1-color);
+        }
+
+
+        .nav-links {
+
+            display: flex;
+
+            gap: 10px;
+        }
+
 
         .nav-link-btn {
+
             background-color: var(--btn-bg);
+
             color: var(--btn-text);
+
             border: none;
+
             padding: 8px 14px;
+
             border-radius: 6px;
+
             font-size: 0.95rem;
+
             cursor: pointer;
-            transition: background-color 0.2s;
+
+            transition:
+                background-color 0.2s;
         }
-        .nav-link-btn:hover { background-color: var(--btn-hover); }
+
+
+        .nav-link-btn:hover {
+
+            background-color: var(--btn-hover);
+        }
+
+
+        /* ================= MAIN ================= */
 
         .main-container {
+
             flex-grow: 1;
+
             display: flex;
+
             flex-direction: column;
+
             justify-content: center;
+
             align-items: center;
+
             padding: 25px 15px;
         }
 
-        h1 { font-size: 2.6rem; color: var(--h1-color); margin: 0 0 8px; }
-        h2 { font-size: 1.6rem; color: var(--h2-color); margin-bottom: 22px; }
-        h3 { font-size: 1.3rem; color: var(--h3-color); margin-bottom: 16px; }
+
+        h1 {
+
+            font-size: 2.6rem;
+
+            color: var(--h1-color);
+
+            margin: 0 0 8px;
+        }
+
+
+        h2 {
+
+            font-size: 1.6rem;
+
+            color: var(--h2-color);
+
+            margin-bottom: 22px;
+        }
+
+
+        h3 {
+
+            font-size: 1.3rem;
+
+            color: var(--h3-color);
+
+            margin-bottom: 16px;
+        }
+
+
+        /* ================= SCREENS ================= */
 
         .screen {
+
             display: none;
+
             flex-direction: column;
+
             align-items: center;
+
             width: 95%;
+
             max-width: 620px;
         }
-        .active { display: flex; }
+
+
+        .screen.active {
+
+            display: flex;
+        }
+
+
+        /* ================= BUTTONS ================= */
 
         .btn-container {
+
             display: flex;
+
             flex-direction: column;
+
             gap: 14px;
+
             width: 100%;
+
             max-width: 320px;
+
             margin: 0 auto;
         }
 
+
         button {
+
             font-size: 1.35rem;
+
             padding: 14px 22px;
+
             background-color: var(--btn-bg);
+
             color: var(--btn-text);
+
             border: none;
+
             border-radius: 10px;
+
             cursor: pointer;
+
             font-family: inherit;
-            transition: transform 0.1s, background-color 0.2s;
+
+            transition:
+                transform 0.1s,
+                background-color 0.2s;
         }
-        button:hover { background-color: var(--btn-hover); transform: scale(1.03); }
+
+
+        button:hover {
+
+            background-color: var(--btn-hover);
+
+            transform: scale(1.03);
+        }
+
+
+        button:disabled {
+
+            opacity: 0.6;
+
+            cursor: not-allowed;
+
+            transform: none;
+        }
+
 
         .back-btn {
+
             background-color: #747d8c;
+
             margin-top: 22px;
+
             font-size: 1.15rem;
+
             padding: 10px 20px;
         }
-        .back-btn:hover { background-color: #57606f; }
 
-        .quiz-box {
-            width: 100%;
-            max-width: 480px;
-            background: var(--card-bg);
-            border: 3px solid var(--box-border);
-            border-radius: 14px;
-            padding: 28px 20px;
-            margin-top: 10px;
-        }
-        .math-box, .country-question {
-            font-size: 2.2rem;
-            margin-bottom: 18px;
-            line-height: 1.3;
-        }
-        input[type="text"], input[type="number"] {
-            font-size: 1.6rem;
-            padding: 12px;
-            text-align: center;
-            border: 3px solid var(--box-border);
-            background-color: var(--box-bg);
-            color: var(--text-color);
-            border-radius: 10px;
-            font-family: inherit;
-            outline: none;
-            width: min(320px, 100%);
-        }
-        #math-message, #country-message {
-            margin-top: 14px;
-            font-size: 1.5rem;
-            min-height: 36px;
-            font-weight: bold;
-        }
 
-        /* Chess */
-        .chessboard-wrapper {
-            width: min(440px, 100%);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-            border-radius: 6px;
-            overflow: hidden;
-            margin-bottom: 14px;
-        }
-        .game-controls {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 8px;
-            max-width: 440px;
-        }
-        .control-btn {
-            font-size: 1.05rem;
-            padding: 8px 14px;
-            border-radius: 6px;
+        .back-btn:hover {
+
             background-color: #57606f;
         }
-        .control-btn:hover { background-color: #3d4653; }
-        .danger-btn { background-color: #ff4757; }
-        .danger-btn:hover { background-color: #ff2a3b; }
-        .warn-btn { background-color: #ffa502; }
-        .warn-btn:hover { background-color: #ff9200; }
+
+
+        /* ================= QUIZZES ================= */
+
+        .quiz-box {
+
+            width: 100%;
+
+            max-width: 480px;
+
+            background: var(--card-bg);
+
+            border: 3px solid var(--box-border);
+
+            border-radius: 14px;
+
+            padding: 28px 20px;
+
+            margin-top: 10px;
+        }
+
+
+        .math-box,
+        .country-question {
+
+            font-size: 2.2rem;
+
+            margin-bottom: 18px;
+
+            line-height: 1.3;
+        }
+
+
+        input[type="text"],
+        input[type="number"] {
+
+            font-size: 1.6rem;
+
+            padding: 12px;
+
+            text-align: center;
+
+            border: 3px solid var(--box-border);
+
+            background-color: var(--box-bg);
+
+            color: var(--text-color);
+
+            border-radius: 10px;
+
+            font-family: inherit;
+
+            outline: none;
+
+            width: min(320px, 100%);
+        }
+
+
+        #math-message,
+        #country-message {
+
+            margin-top: 14px;
+
+            font-size: 1.5rem;
+
+            min-height: 36px;
+
+            font-weight: bold;
+        }
+
+
+        /* ================= CHESS ================= */
+
+        .chessboard-wrapper {
+
+            width: min(440px, 100%);
+
+            box-shadow:
+                0 8px 24px rgba(0,0,0,0.25);
+
+            border-radius: 6px;
+
+            overflow: hidden;
+
+            margin-bottom: 14px;
+        }
+
+
+        .game-controls {
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            justify-content: center;
+
+            gap: 8px;
+
+            margin-top: 8px;
+
+            max-width: 440px;
+        }
+
+
+        .control-btn {
+
+            font-size: 1.05rem;
+
+            padding: 8px 14px;
+
+            border-radius: 6px;
+
+            background-color: #57606f;
+        }
+
+
+        .control-btn:hover {
+
+            background-color: #3d4653;
+        }
+
+
+        .danger-btn {
+
+            background-color: #ff4757;
+        }
+
+
+        .danger-btn:hover {
+
+            background-color: #ff2a3b;
+        }
+
+
+        .warn-btn {
+
+            background-color: #ffa502;
+        }
+
+
+        .warn-btn:hover {
+
+            background-color: #ff9200;
+        }
+
 
         #chess-status {
+
             font-size: 1.25rem;
+
             margin-top: 14px;
+
             font-weight: bold;
+
             color: var(--h1-color);
+
             min-height: 30px;
         }
 
-        /* Code Editor */
+
+        /* ================= CODE EDITOR ================= */
+
         textarea {
+
             width: 100%;
+
             height: 200px;
+
             font-family: monospace;
+
             font-size: 1.1rem;
+
             text-align: left;
+
             padding: 12px;
+
             border: 3px solid var(--box-border);
+
             background-color: var(--box-bg);
+
             color: var(--text-color);
-            border-radius: 10px;
+
+            border-radius: 0 10px 10px 0;
+
             resize: vertical;
+
             outline: none;
-            box-sizing: border-box;
+
+            line-height: 1.25;
+
+            spellcheck: false;
         }
+
+
         .output-box {
-            background: #fff;
-            color: #000;
+
+            background: #ffffff;
+
+            color: #000000;
+
             border: 3px dashed var(--box-border);
+
             width: 100%;
+
             padding: 15px;
+
             margin-top: 15px;
+
             border-radius: 10px;
+
             text-align: left;
-            box-sizing: border-box;
+
             font-family: monospace;
+
             min-height: 80px;
+
+            max-height: 300px;
+
+            overflow-y: auto;
+
             font-size: 1.05rem;
+
             white-space: pre-wrap;
+
             word-break: break-word;
         }
+
+
         .dark .output-box {
+
             background: #1e1e1e;
+
             color: #e0e0e0;
         }
 
-        @media (max-width: 520px) {
-            h1 { font-size: 2.1rem; }
-            .math-box, .country-question { font-size: 1.8rem; }
-            button { font-size: 1.2rem; }
+
+        /* ================= LINE NUMBERS ================= */
+
+        #line-numbers {
+
+            display: block;
+
+            width: 45px;
+
+            height: 200px;
+
+            padding: 12px 6px;
+
+            font-family: monospace;
+
+            font-size: 1.1rem;
+
+            line-height: 1.25;
+
+            background: var(--box-bg);
+
+            border: 3px solid var(--box-border);
+
+            border-right: none;
+
+            border-radius: 10px 0 0 10px;
+
+            color: #888;
+
+            text-align: right;
+
+            user-select: none;
+
+            overflow: hidden;
+
+            white-space: nowrap;
         }
+
+
+        /* ================= EDITOR TOOLBAR ================= */
+
+        .editor-tool-container {
+
+            display: none;
+
+            width: 100%;
+
+            margin-bottom: 10px;
+
+            gap: 8px;
+        }
+
+
+        .editor-tool-container.active {
+
+            display: flex;
+        }
+
+
+        .editor-tool-container input {
+
+            flex: 1;
+
+            font-size: 1rem;
+
+            padding: 7px 10px;
+
+            text-align: left;
+
+            border: 2px solid var(--box-border);
+
+            background: var(--box-bg);
+
+            color: var(--text-color);
+
+            border-radius: 7px;
+
+            font-family: Arial, sans-serif;
+
+            outline: none;
+
+            width: auto;
+        }
+
+
+        .editor-tool-container button {
+
+            font-size: 0.9rem;
+
+            padding: 7px 12px;
+
+            border-radius: 7px;
+        }
+
+
+        .editor-tool-close {
+
+            background: #747d8c !important;
+        }
+
+
+        .editor-tool-close:hover {
+
+            background: #57606f !important;
+        }
+
+
+        /* ================= MOBILE ================= */
+
+        @media (max-width: 520px) {
+
+            h1 {
+                font-size: 2.1rem;
+            }
+
+
+            .math-box,
+            .country-question {
+                font-size: 1.8rem;
+            }
+
+
+            button {
+                font-size: 1.2rem;
+            }
+
+
+            nav {
+                padding: 10px;
+            }
+
+
+            .logo {
+                font-size: 1rem;
+            }
+
+
+            .nav-link-btn {
+                font-size: 0.8rem;
+
+                padding: 7px 9px;
+            }
+
+
+            #line-numbers {
+
+                width: 38px;
+
+                font-size: 0.95rem;
+
+                padding-left: 4px;
+
+                padding-right: 4px;
+            }
+
+
+            textarea {
+
+                font-size: 0.95rem;
+            }
+
+        }
+
     </style>
 
+
+    <!-- ================= LOAD THEME ================= -->
+
     <script>
-        const savedTheme = localStorage.getItem('selectedTheme');
-        if (savedTheme) document.documentElement.className = savedTheme;
+
+        const savedTheme =
+            localStorage.getItem("selectedTheme");
+
+        if (savedTheme === "dark") {
+
+            document.documentElement.className = "dark";
+
+        } else {
+
+            document.documentElement.className = "light";
+
+        }
+
     </script>
+
 </head>
+
+
 <body>
 
+
+<!-- ================= NAVBAR ================= -->
+
 <nav>
-    <div class="logo">🎮 Haaris670's site</div>
+
+    <div class="logo">
+        🎮 Haaris670's site
+    </div>
+
 
     <div class="nav-links">
-        <button class="nav-link-btn"
-                onclick="window.location.href='update-log/update.html'">
+
+        <button
+            class="nav-link-btn"
+            onclick="window.location.href='update-log/update.html'">
+
             📋 Updates
+
         </button>
 
-        <button class="nav-link-btn" onclick="toggleTheme()">
+
+        <button
+            class="nav-link-btn"
+            onclick="toggleTheme()">
+
             🌓 Theme
+
         </button>
+
     </div>
+
 </nav>
+
 
 <div class="main-container">
 
-    <!-- MENU -->
-    <div id="menu-screen" class="screen active">
-        <h1>Welcome to my website!</h1>
-        <h2>What would you like to do?</h2>
-        <div class="btn-container">
-            <button onclick="showScreen('math-screen'); startMath();">🧮 Math Quiz</button>
-            <button onclick="showScreen('chess-screen'); initVisualChess();">♟️ Chess</button>
-            <button onclick="showScreen('country-screen'); startCountries();">🌍 Country Guesser</button>
-            <button onclick="showScreen('lang-select-screen');">💻 Code Editor</button>
-        </div>
+
+<!-- ==================================================
+     MENU
+================================================== -->
+
+<div id="menu-screen" class="screen active">
+
+    <h1>
+        Welcome to my website!
+    </h1>
+
+
+    <h2>
+        What would you like to do?
+    </h2>
+
+
+    <div class="btn-container">
+
+        <button
+            onclick="showScreen('math-screen'); startMath();">
+
+            🧮 Math Quiz
+
+        </button>
+
+
+        <button
+            onclick="showScreen('chess-screen'); initVisualChess();">
+
+            ♟️ Chess
+
+        </button>
+
+
+        <button
+            onclick="showScreen('country-screen'); startCountries();">
+
+            🌍 Country Guesser
+
+        </button>
+
+
+        <button
+            onclick="showScreen('lang-select-screen');">
+
+            💻 Code Editor
+
+        </button>
+
     </div>
 
-    <!-- MATH QUIZ -->
-    <div id="math-screen" class="screen">
-        <h2>🧮 Math Quiz (<span id="math-score">0</span> / 10)</h2>
-        <div class="quiz-box">
-            <div class="math-box" id="math-question-text">Loading...</div>
-            <input type="number" id="math-input" placeholder="Your answer">
-            <button onclick="checkMathAnswer()" style="margin-top:16px;">Submit</button>
-            <div id="math-message"></div>
-        </div>
-        <button class="back-btn" onclick="showScreen('menu-screen')">← Menu</button>
-    </div>
-
-    <!-- COUNTRY GUESS -->
-    <div id="country-screen" class="screen">
-        <h2>🌍 Country Guess (<span id="country-score">0</span> / 12)</h2>
-        <div class="quiz-box">
-            <div class="country-question" id="country-question-text">Loading...</div>
-            <input type="text" id="country-input" placeholder="Type the country">
-            <button onclick="checkCountryAnswer()" style="margin-top:16px;">Submit</button>
-            <div id="country-message"></div>
-        </div>
-        <button class="back-btn" onclick="showScreen('menu-screen')">← Menu</button>
-    </div>
-
-    <!-- CHESS -->
-    <div id="chess-screen" class="screen">
-        <h2>♟️ Interactive Chess (vs Bot)</h2>
-        <div class="chessboard-wrapper">
-            <div id="board-grid" style="width:100%"></div>
-        </div>
-
-        <div class="game-controls">
-            <button class="control-btn" onclick="jumpToBound('start')" title="Start">⏮️</button>
-            <button class="control-btn" onclick="navigateHistory(-1)" title="Back">⬅️</button>
-            <button class="control-btn" onclick="navigateHistory(1)" title="Forward">➡️</button>
-            <button class="control-btn" onclick="jumpToBound('end')" title="End">⏭️</button>
-            <button class="control-btn warn-btn" onclick="handleTakeback()">↩️ Takeback</button>
-            <button class="control-btn" onclick="handleDrawOffer()">🤝 Draw</button>
-            <button class="control-btn danger-btn" onclick="handleResign()">🏳️ Resign</button>
-        </div>
-
-        <div id="chess-status">Your turn (White)</div>
-        <button class="back-btn" onclick="showScreen('menu-screen')">← Leave Game</button>
-    </div>
-
-    <!-- LANGUAGE SELECT -->
-    <div id="lang-select-screen" class="screen">
-        <h2>💻 Code Editor</h2>
-        <h3>Which language do you want?</h3>
-        <div class="btn-container">
-            <button onclick="startEditor('Python')">🐍 Python</button>
-            <button onclick="startEditor('Lua')">🌙 Lua</button>
-            <button onclick="startEditor('HTML')">🌐 HTML</button>
-        </div>
-        <button class="back-btn" onclick="showScreen('menu-screen')">← Menu</button>
-    </div>
-
-    <!-- EDITOR -->
-    <div id="editor-screen" class="screen">
-        <h2><span id="current-lang-title">HTML</span> Editor</h2>
-        <p id="editor-hint" style="font-family:sans-serif; font-size:1rem; color:var(--h2-color); margin:0 0 15px 0;"></p>
-        <textarea id="editor-input"></textarea>
-        <button id="run-btn" onclick="runCode()" style="margin-top:15px; width:100%;">⚡ RUN CODE</button>
-        <div class="output-box" id="editor-output">Your output will appear here...</div>
-        <button class="back-btn" onclick="showScreen('lang-select-screen')">← Change Language</button>
-    </div>
 </div>
 
+
+<!-- ==================================================
+     MATH
+================================================== -->
+
+<div id="math-screen" class="screen">
+
+    <h2>
+        🧮 Math Quiz
+        (<span id="math-score">0</span> / 10)
+    </h2>
+
+
+    <div class="quiz-box">
+
+        <div
+            class="math-box"
+            id="math-question-text">
+
+            Loading...
+
+        </div>
+
+
+        <input
+            type="number"
+            id="math-input"
+            placeholder="Your answer">
+
+
+        <button
+            onclick="checkMathAnswer()"
+            style="margin-top:16px;">
+
+            Submit
+
+        </button>
+
+
+        <div id="math-message"></div>
+
+    </div>
+
+
+    <button
+        class="back-btn"
+        onclick="showScreen('menu-screen')">
+
+        ← Menu
+
+    </button>
+
+</div>
+
+
+<!-- ==================================================
+     COUNTRY
+================================================== -->
+
+<div id="country-screen" class="screen">
+
+    <h2>
+        🌍 Country Guess
+        (<span id="country-score">0</span> / 12)
+    </h2>
+
+
+    <div class="quiz-box">
+
+        <div
+            class="country-question"
+            id="country-question-text">
+
+            Loading...
+
+        </div>
+
+
+        <input
+            type="text"
+            id="country-input"
+            placeholder="Type the country">
+
+
+        <button
+            onclick="checkCountryAnswer()"
+            style="margin-top:16px;">
+
+            Submit
+
+        </button>
+
+
+        <div id="country-message"></div>
+
+    </div>
+
+
+    <button
+        class="back-btn"
+        onclick="showScreen('menu-screen')">
+
+        ← Menu
+
+    </button>
+
+</div>
+
+
+<!-- ==================================================
+     CHESS
+================================================== -->
+
+<div id="chess-screen" class="screen">
+
+    <h2>
+        ♟️ Interactive Chess (vs Bot)
+    </h2>
+
+
+    <div class="chessboard-wrapper">
+
+        <div
+            id="board-grid"
+            style="width:100%;">
+
+        </div>
+
+    </div>
+
+
+    <div class="game-controls">
+
+        <button
+            class="control-btn"
+            onclick="jumpToBound('start')">
+
+            ⏮️
+
+        </button>
+
+
+        <button
+            class="control-btn"
+            onclick="navigateHistory(-1)">
+
+            ⬅️
+
+        </button>
+
+
+        <button
+            class="control-btn"
+            onclick="navigateHistory(1)">
+
+            ➡️
+
+        </button>
+
+
+        <button
+            class="control-btn"
+            onclick="jumpToBound('end')">
+
+            ⏭️
+
+        </button>
+
+
+        <button
+            class="control-btn warn-btn"
+            onclick="handleTakeback()">
+
+            ↩️ Takeback
+
+        </button>
+
+
+        <button
+            class="control-btn"
+            onclick="handleDrawOffer()">
+
+            🤝 Draw
+
+        </button>
+
+
+        <button
+            class="control-btn danger-btn"
+            onclick="handleResign()">
+
+            🏳️ Resign
+
+        </button>
+
+    </div>
+
+
+    <div id="chess-status">
+
+        Your turn (White)
+
+    </div>
+
+
+    <button
+        class="back-btn"
+        onclick="showScreen('menu-screen')">
+
+        ← Leave Game
+
+    </button>
+
+</div>
+
+
+<!-- ==================================================
+     LANGUAGE SELECT
+================================================== -->
+
+<div id="lang-select-screen" class="screen">
+
+    <h2>
+        💻 Code Editor
+    </h2>
+
+
+    <h3>
+        Which language do you want?
+    </h3>
+
+
+    <div class="btn-container">
+
+        <button
+            onclick="startEditor('Python')">
+
+            🐍 Python
+
+        </button>
+
+
+        <button
+            onclick="startEditor('Lua')">
+
+            🌙 Lua
+
+        </button>
+
+
+        <button
+            onclick="startEditor('HTML')">
+
+            🌐 HTML
+
+        </button>
+
+    </div>
+
+
+    <button
+        class="back-btn"
+        onclick="showScreen('menu-screen')">
+
+        ← Menu
+
+    </button>
+
+</div>
+
+
+<!-- ==================================================
+     CODE EDITOR
+================================================== -->
+
+<div id="editor-screen" class="screen">
+
+    <h2>
+
+        <span id="current-lang-title">
+            HTML
+        </span>
+
+        Editor
+
+    </h2>
+
+
+    <p
+        id="editor-hint"
+        style="
+            font-family:sans-serif;
+            font-size:1rem;
+            color:var(--h2-color);
+            margin:0 0 15px 0;
+        ">
+    </p>
+
+
+    <!-- ================= FIND BAR ================= -->
+
+    <div
+        id="search-container"
+        class="editor-tool-container">
+
+        <input
+            type="text"
+            id="search-input"
+            placeholder="Find in code... (Press Enter)">
+
+
+        <button
+            onclick="findInCode()">
+
+            Find
+
+        </button>
+
+
+        <button
+            class="editor-tool-close"
+            onclick="toggleSearch(false)">
+
+            ✕
+
+        </button>
+
+    </div>
+
+
+    <!-- ================= GO TO LINE BAR ================= -->
+
+    <div
+        id="goto-line-container"
+        class="editor-tool-container">
+
+        <input
+            type="number"
+            id="goto-line-input"
+            min="1"
+            placeholder="Go to line… (Press Enter)">
+
+
+        <button
+            onclick="goToLine()">
+
+            Go
+
+        </button>
+
+
+        <button
+            class="editor-tool-close"
+            onclick="toggleGoToLine(false)">
+
+            ✕
+
+        </button>
+
+    </div>
+
+
+    <!-- ================= CODE EDITOR ================= -->
+
+    <div
+        style="
+            display:flex;
+            width:100%;
+            position:relative;
+        ">
+
+
+        <!-- LINE NUMBERS -->
+
+        <div id="line-numbers">
+
+            1
+
+        </div>
+
+
+        <!-- TEXTAREA -->
+
+        <textarea
+            id="editor-input"
+            placeholder="Write your code here..."
+            spellcheck="false"></textarea>
+
+    </div>
+
+
+    <button
+        id="run-btn"
+        onclick="runCode()"
+        style="
+            margin-top:15px;
+            width:100%;
+        ">
+
+        ⚡ RUN CODE
+
+    </button>
+
+
+    <div
+        class="output-box"
+        id="editor-output">
+
+        Your output will appear here...
+
+    </div>
+
+
+    <button
+        class="back-btn"
+        onclick="showScreen('lang-select-screen')">
+
+        ← Change Language
+
+    </button>
+
+</div>
+
+
+</div>
+
+
+<!-- ==================================================
+     JAVASCRIPT
+================================================== -->
+
 <script>
-/* ========== HELPERS ========== */
+
+
+/* ==================================================
+   SCREEN SYSTEM
+================================================== */
+
 function showScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
+
+    document
+        .querySelectorAll(".screen")
+        .forEach(screen => {
+
+            screen.classList.remove("active");
+
+        });
+
+
+    const screen =
+        document.getElementById(id);
+
+
+    if (screen) {
+
+        screen.classList.add("active");
+
+    }
+
 }
+
+
+/* ==================================================
+   THEME
+================================================== */
 
 function toggleTheme() {
-    const isDark = document.documentElement.classList.toggle('dark');
-    localStorage.setItem('selectedTheme', isDark ? 'dark' : 'light');
+
+    const isDark =
+        document.documentElement.classList.toggle("dark");
+
+
+    document.documentElement.classList.toggle(
+        "light",
+        !isDark
+    );
+
+
+    localStorage.setItem(
+        "selectedTheme",
+        isDark ? "dark" : "light"
+    );
+
 }
 
-/* ========== MATH ========== */
+
+/* ==================================================
+   MATH QUIZ
+================================================== */
+
 const mathQuestions = [
-    { q: "What is 18÷3?", a: 6 },
-    { q: "What is 9×5?", a: 45 },
-    { q: "What is 14+10?", a: 24 },
-    { q: "What is 10×8?", a: 80 },
-    { q: "What is √64?", a: 8 },
-    { q: "What is 7²?", a: 49 },
-    { q: "What is 100÷4?", a: 25 },
-    { q: "What is 132+12?", a: 144 },
-    { q: "What is 3³?", a: 27 },
-    { q: "What is 5 cubed?", a: 125 }
+
+    {
+        q: "What is 18 ÷ 3?",
+        a: 6
+    },
+
+    {
+        q: "What is 9 × 5?",
+        a: 45
+    },
+
+    {
+        q: "What is 14 + 10?",
+        a: 24
+    },
+
+    {
+        q: "What is 10 × 8?",
+        a: 80
+    },
+
+    {
+        q: "What is √64?",
+        a: 8
+    },
+
+    {
+        q: "What is 7²?",
+        a: 49
+    },
+
+    {
+        q: "What is 100 ÷ 4?",
+        a: 25
+    },
+
+    {
+        q: "What is 132 + 12?",
+        a: 144
+    },
+
+    {
+        q: "What is 3³?",
+        a: 27
+    },
+
+    {
+        q: "What is 5 cubed?",
+        a: 125
+    }
+
 ];
-let mathIndex = 0, mathScore = 0;
+
+
+let mathIndex = 0;
+let mathScore = 0;
+
 
 function startMath() {
+
     mathIndex = 0;
     mathScore = 0;
-    document.getElementById('math-score').textContent = mathScore;
-    document.getElementById('math-message').textContent = "";
-    document.getElementById('math-input').style.display = "inline-block";
-    document.getElementById('math-input').value = "";
+
+
+    document.getElementById(
+        "math-score"
+    ).textContent = mathScore;
+
+
+    document.getElementById(
+        "math-message"
+    ).textContent = "";
+
+
+    const input =
+        document.getElementById(
+            "math-input"
+        );
+
+
+    input.style.display =
+        "inline-block";
+
+
+    input.value = "";
+
+
     loadMathQuestion();
+
 }
+
 
 function loadMathQuestion() {
-    if (mathIndex < mathQuestions.length) {
-        document.getElementById('math-question-text').textContent =
+
+    const question =
+        document.getElementById(
+            "math-question-text"
+        );
+
+
+    const input =
+        document.getElementById(
+            "math-input"
+        );
+
+
+    if (
+        mathIndex <
+        mathQuestions.length
+    ) {
+
+        question.textContent =
             `Question ${mathIndex + 1}: ${mathQuestions[mathIndex].q}`;
-        document.getElementById('math-input').value = "";
-        document.getElementById('math-input').focus();
+
+
+        input.value = "";
+
+
+        input.focus();
+
     } else {
-        document.getElementById('math-question-text').textContent =
+
+        question.textContent =
             `🎉 Game Over! Final score: ${mathScore}/10`;
-        document.getElementById('math-input').style.display = "none";
+
+
+        input.style.display =
+            "none";
+
     }
+
 }
+
 
 function checkMathAnswer() {
-    if (mathIndex >= mathQuestions.length) return;
-    const userAns = parseInt(document.getElementById('math-input').value);
-    const msg = document.getElementById('math-message');
 
-    if (userAns === mathQuestions[mathIndex].a) {
-        mathScore++;
-        document.getElementById('math-score').textContent = mathScore;
-        msg.textContent = "Correct!";
-        msg.style.color = "var(--feedback-correct)";
-    } else {
-        msg.textContent = `Incorrect! Answer was ${mathQuestions[mathIndex].a}`;
-        msg.style.color = "var(--feedback-wrong)";
+    if (
+        mathIndex >=
+        mathQuestions.length
+    ) {
+
+        return;
+
     }
+
+
+    const input =
+        document.getElementById(
+            "math-input"
+        );
+
+
+    const message =
+        document.getElementById(
+            "math-message"
+        );
+
+
+    const answer =
+        Number(input.value);
+
+
+    const correct =
+        mathQuestions[mathIndex].a;
+
+
+    if (
+        input.value !== "" &&
+        answer === correct
+    ) {
+
+        mathScore++;
+
+
+        document.getElementById(
+            "math-score"
+        ).textContent =
+            mathScore;
+
+
+        message.textContent =
+            "Correct!";
+
+
+        message.style.color =
+            "var(--feedback-correct)";
+
+    } else {
+
+        message.textContent =
+            `Incorrect! Answer was ${correct}`;
+
+
+        message.style.color =
+            "var(--feedback-wrong)";
+
+    }
+
+
     mathIndex++;
+
+
     setTimeout(() => {
-        msg.textContent = "";
+
+        message.textContent = "";
+
         loadMathQuestion();
+
     }, 1400);
+
 }
 
-/* ========== COUNTRY GUESS ========== */
+
+/* ==================================================
+   COUNTRY GUESSER
+================================================== */
+
 const countryQuestions = [
-    { clue: "G..M..Y", answer: "Germany" },
-    { clue: "I.D.A", answer: "India" },
-    { clue: "P..U", answer: "Peru" },
-    { clue: "J.P..", answer: "Japan" },
-    { clue: "T..I..A", answer: "Tunisia" },
-    { clue: "N..W..Y", answer: "Norway" },
-    { clue: "P..K...N", answer: "Pakistan" },
-    { clue: "A..T...L..A", answer: "Australia" },
-    { clue: "M..I..O", answer: "Mexico" },
-    { clue: "F..N.E", answer: "France" },
-    { clue: "G..NA", answer: "Ghana" },
-    { clue: "L..V.A", answer: "Latvia" }
+
+    {
+        clue: "G..M..Y",
+        answer: "Germany"
+    },
+
+    {
+        clue: "I.D.A",
+        answer: "India"
+    },
+
+    {
+        clue: "P..U",
+        answer: "Peru"
+    },
+
+    {
+        clue: "J.P..",
+        answer: "Japan"
+    },
+
+    {
+        clue: "T..I..A",
+        answer: "Tunisia"
+    },
+
+    {
+        clue: "N..W..Y",
+        answer: "Norway"
+    },
+
+    {
+        clue: "P..K...N",
+        answer: "Pakistan"
+    },
+
+    {
+        clue: "A..T...L..A",
+        answer: "Australia"
+    },
+
+    {
+        clue: "M..I..O",
+        answer: "Mexico"
+    },
+
+    {
+        clue: "F..N.E",
+        answer: "France"
+    },
+
+    {
+        clue: "G..NA",
+        answer: "Ghana"
+    },
+
+    {
+        clue: "L..V.A",
+        answer: "Latvia"
+    }
+
 ];
-let countryIndex = 0, countryScore = 0;
+
+
+let countryIndex = 0;
+let countryScore = 0;
+
 
 function startCountries() {
+
     countryIndex = 0;
     countryScore = 0;
-    document.getElementById('country-score').textContent = countryScore;
-    document.getElementById('country-message').textContent = "";
-    document.getElementById('country-input').style.display = "inline-block";
-    document.getElementById('country-input').value = "";
+
+
+    document.getElementById(
+        "country-score"
+    ).textContent =
+        countryScore;
+
+
+    document.getElementById(
+        "country-message"
+    ).textContent = "";
+
+
+    const input =
+        document.getElementById(
+            "country-input"
+        );
+
+
+    input.style.display =
+        "inline-block";
+
+
+    input.value = "";
+
+
     loadCountryQuestion();
+
 }
+
 
 function loadCountryQuestion() {
-    if (countryIndex < countryQuestions.length) {
-        document.getElementById('country-question-text').textContent =
+
+    const question =
+        document.getElementById(
+            "country-question-text"
+        );
+
+
+    const input =
+        document.getElementById(
+            "country-input"
+        );
+
+
+    if (
+        countryIndex <
+        countryQuestions.length
+    ) {
+
+        question.textContent =
             `Question ${countryIndex + 1}: Guess: ${countryQuestions[countryIndex].clue}`;
-        document.getElementById('country-input').value = "";
-        document.getElementById('country-input').focus();
+
+
+        input.value = "";
+
+
+        input.focus();
+
     } else {
-        document.getElementById('country-question-text').textContent =
+
+        question.textContent =
             `🎉 Game Over! Final score: ${countryScore}/12`;
-        document.getElementById('country-input').style.display = "none";
+
+
+        input.style.display =
+            "none";
+
     }
+
 }
+
 
 function checkCountryAnswer() {
-    if (countryIndex >= countryQuestions.length) return;
-    const input = document.getElementById('country-input').value.trim();
-    const msg = document.getElementById('country-message');
-    const correct = countryQuestions[countryIndex].answer;
 
-    if (input.toLowerCase() === correct.toLowerCase()) {
-        countryScore++;
-        document.getElementById('country-score').textContent = countryScore;
-        msg.textContent = "Correct!";
-        msg.style.color = "var(--feedback-correct)";
-    } else {
-        msg.textContent = `Wrong! It was ${correct}`;
-        msg.style.color = "var(--feedback-wrong)";
+    if (
+        countryIndex >=
+        countryQuestions.length
+    ) {
+
+        return;
+
     }
+
+
+    const input =
+        document.getElementById(
+            "country-input"
+        );
+
+
+    const message =
+        document.getElementById(
+            "country-message"
+        );
+
+
+    const answer =
+        countryQuestions[countryIndex].answer;
+
+
+    const userAnswer =
+        input.value.trim();
+
+
+    if (
+        userAnswer.toLowerCase() ===
+        answer.toLowerCase()
+    ) {
+
+        countryScore++;
+
+
+        document.getElementById(
+            "country-score"
+        ).textContent =
+            countryScore;
+
+
+        message.textContent =
+            "Correct!";
+
+
+        message.style.color =
+            "var(--feedback-correct)";
+
+    } else {
+
+        message.textContent =
+            `Wrong! It was ${answer}`;
+
+
+        message.style.color =
+            "var(--feedback-wrong)";
+
+    }
+
+
     countryIndex++;
+
+
     setTimeout(() => {
-        msg.textContent = "";
+
+        message.textContent = "";
+
         loadCountryQuestion();
+
     }, 1400);
+
 }
 
-/* ========== CHESS ========== */
+
+/* ==================================================
+   CHESS
+================================================== */
+
 let board = null;
+
 let game = null;
+
 let moveHistory = [];
+
 let currentHistoryIndex = -1;
+
 let customGameOverState = false;
 
+
 function initVisualChess() {
-    game = new Chess();
+
+    game =
+        new Chess();
+
+
     moveHistory = [];
+
     currentHistoryIndex = -1;
+
     customGameOverState = false;
-    document.getElementById('chess-status').textContent = "Your turn (White)";
+
+
+    document.getElementById(
+        "chess-status"
+    ).textContent =
+        "Your turn (White)";
+
+
+    const container =
+        document.getElementById(
+            "board-grid"
+        );
+
+
+    container.innerHTML = "";
+
 
     const config = {
+
         draggable: true,
-        position: 'start',
-        onDragStart: onDragStart,
-        onDrop: onDrop
+
+        position: "start",
+
+        onDragStart:
+            onDragStart,
+
+        onDrop:
+            onDrop
+
     };
 
-    const container = document.getElementById('board-grid');
-    container.innerHTML = '';
-    board = Chessboard2(container, config);
+
+    board =
+        Chessboard2(
+            container,
+            config
+        );
+
 }
+
 
 function onDragStart(params) {
-    if (game.game_over() || customGameOverState || currentHistoryIndex !== moveHistory.length - 1) return false;
-    if (params.piece.search(/^b/) !== -1) return false;
+
+    if (!game) {
+
+        return false;
+
+    }
+
+
+    if (
+        game.game_over() ||
+        customGameOverState ||
+        currentHistoryIndex !==
+        moveHistory.length - 1
+    ) {
+
+        return false;
+
+    }
+
+
+    if (
+        params.piece &&
+        params.piece.search(/^b/) !== -1
+    ) {
+
+        return false;
+
+    }
+
+
+    if (
+        game.turn() !== "w"
+    ) {
+
+        return false;
+
+    }
+
 }
+
 
 function onDrop(params) {
-    const move = game.move({
-        from: params.source,
-        to: params.target,
-        promotion: 'q'
-    });
-    if (move === null) return 'snapback';
 
-    moveHistory.push(move.san);
-    currentHistoryIndex = moveHistory.length - 1;
+    if (!game) {
+
+        return "snapback";
+
+    }
+
+
+    const move =
+        game.move({
+
+            from:
+                params.source,
+
+            to:
+                params.target,
+
+            promotion:
+                "q"
+
+        });
+
+
+    if (move === null) {
+
+        return "snapback";
+
+    }
+
+
+    moveHistory.push(
+        move.san
+    );
+
+
+    currentHistoryIndex =
+        moveHistory.length - 1;
+
+
     checkGameStatus();
 
-    if (!game.game_over() && !customGameOverState) {
-        document.getElementById('chess-status').textContent = "Bot is thinking...";
-        window.setTimeout(makeBotMove, 450);
+
+    if (
+        !game.game_over() &&
+        !customGameOverState
+    ) {
+
+        document.getElementById(
+            "chess-status"
+        ).textContent =
+            "Bot is thinking...";
+
+
+        setTimeout(
+            makeBotMove,
+            450
+        );
+
     }
+
 }
+
 
 function makeBotMove() {
-    if (game.game_over() || customGameOverState) return;
-    const possibleMoves = game.moves();
-    if (possibleMoves.length === 0) return;
 
-    let chosen = null;
-    const checks = possibleMoves.filter(m => m.includes('+') || m.includes('#'));
-    const captures = possibleMoves.filter(m => m.includes('x'));
-    if (checks.length) chosen = checks[Math.floor(Math.random() * checks.length)];
-    else if (captures.length) chosen = captures[Math.floor(Math.random() * captures.length)];
-    else chosen = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+    if (
+        !game ||
+        game.game_over() ||
+        customGameOverState
+    ) {
 
-    const move = game.move(chosen);
-    moveHistory.push(move.san);
-    currentHistoryIndex = moveHistory.length - 1;
-    board.position(game.fen(), true);
+        return;
+
+    }
+
+
+    const possibleMoves =
+        game.moves();
+
+
+    if (
+        possibleMoves.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    let chosen;
+
+
+    const checks =
+        possibleMoves.filter(
+            move =>
+                move.includes("+") ||
+                move.includes("#")
+        );
+
+
+    const captures =
+        possibleMoves.filter(
+            move =>
+                move.includes("x")
+        );
+
+
+    if (
+        checks.length > 0
+    ) {
+
+        chosen =
+            checks[
+                Math.floor(
+                    Math.random() *
+                    checks.length
+                )
+            ];
+
+    } else if (
+        captures.length > 0
+    ) {
+
+        chosen =
+            captures[
+                Math.floor(
+                    Math.random() *
+                    captures.length
+                )
+            ];
+
+    } else {
+
+        chosen =
+            possibleMoves[
+                Math.floor(
+                    Math.random() *
+                    possibleMoves.length
+                )
+            ];
+
+    }
+
+
+    const move =
+        game.move(chosen);
+
+
+    if (!move) {
+
+        return;
+
+    }
+
+
+    moveHistory.push(
+        move.san
+    );
+
+
+    currentHistoryIndex =
+        moveHistory.length - 1;
+
+
+    board.position(
+        game.fen(),
+        true
+    );
+
+
     checkGameStatus();
+
 }
+
 
 function checkGameStatus() {
-    if (customGameOverState) return;
-    if (game.in_checkmate()) {
-        document.getElementById('chess-status').textContent =
-            game.turn() === 'w' ? "Checkmate! Bot wins." : "Checkmate! You win! 🎉";
-    } else if (game.in_draw() || game.in_stalemate() || game.in_threefold_repetition() || game.insufficient_material()) {
-        document.getElementById('chess-status').textContent = "Game Over: Draw";
-    } else if (game.in_check()) {
-        document.getElementById('chess-status').textContent =
-            game.turn() === 'w' ? "Your turn (White) – Check!" : "Bot's turn – Check!";
-    } else {
-        document.getElementById('chess-status').textContent =
-            game.turn() === 'w' ? "Your turn (White)" : "Bot's turn (Black)";
+
+    if (
+        !game ||
+        customGameOverState
+    ) {
+
+        return;
+
     }
+
+
+    if (
+        game.in_checkmate()
+    ) {
+
+        document.getElementById(
+            "chess-status"
+        ).textContent =
+
+            game.turn() === "w"
+                ? "Checkmate! Bot wins."
+                : "Checkmate! You win! 🎉";
+
+        return;
+
+    }
+
+
+    if (
+        game.in_draw() ||
+        game.in_stalemate() ||
+        game.in_threefold_repetition() ||
+        game.insufficient_material()
+    ) {
+
+        document.getElementById(
+            "chess-status"
+        ).textContent =
+            "Game Over: Draw";
+
+        return;
+
+    }
+
+
+    if (
+        game.in_check()
+    ) {
+
+        document.getElementById(
+            "chess-status"
+        ).textContent =
+
+            game.turn() === "w"
+                ? "Your turn (White) – Check!"
+                : "Bot's turn – Check!";
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "chess-status"
+    ).textContent =
+
+        game.turn() === "w"
+            ? "Your turn (White)"
+            : "Bot's turn (Black)";
+
 }
+
 
 function handleTakeback() {
-    if (customGameOverState) return;
-    if (moveHistory.length >= 2) {
-        game.undo(); game.undo();
-        moveHistory.pop(); moveHistory.pop();
-    } else if (moveHistory.length === 1) {
+
+    if (
+        !game ||
+        customGameOverState
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        moveHistory.length >= 2
+    ) {
+
         game.undo();
+        game.undo();
+
         moveHistory.pop();
-    } else return;
-    currentHistoryIndex = moveHistory.length - 1;
-    board.position(game.fen(), true);
+        moveHistory.pop();
+
+    } else if (
+        moveHistory.length === 1
+    ) {
+
+        game.undo();
+
+        moveHistory.pop();
+
+    } else {
+
+        return;
+
+    }
+
+
+    currentHistoryIndex =
+        moveHistory.length - 1;
+
+
+    board.position(
+        game.fen(),
+        true
+    );
+
+
     checkGameStatus();
+
 }
+
 
 function handleResign() {
-    if (game.game_over() || customGameOverState) return;
-    customGameOverState = true;
-    document.getElementById('chess-status').textContent = "🏳️ You resigned. Bot wins!";
+
+    if (
+        !game ||
+        game.game_over() ||
+        customGameOverState
+    ) {
+
+        return;
+
+    }
+
+
+    customGameOverState =
+        true;
+
+
+    document.getElementById(
+        "chess-status"
+    ).textContent =
+        "🏳️ You resigned. Bot wins!";
+
 }
+
 
 function handleDrawOffer() {
-    if (game.game_over() || customGameOverState) return;
-    if (Math.random() > 0.45) {
-        customGameOverState = true;
-        document.getElementById('chess-status').textContent = "🤝 Bot accepted the draw. Game Over!";
-    } else {
-        document.getElementById('chess-status').textContent = "❌ Bot declined the draw. Keep playing!";
-        setTimeout(checkGameStatus, 1800);
+
+    if (
+        !game ||
+        game.game_over() ||
+        customGameOverState
+    ) {
+
+        return;
+
     }
+
+
+    if (
+        Math.random() > 0.45
+    ) {
+
+        customGameOverState =
+            true;
+
+
+        document.getElementById(
+            "chess-status"
+        ).textContent =
+            "🤝 Bot accepted the draw. Game Over!";
+
+    } else {
+
+        document.getElementById(
+            "chess-status"
+        ).textContent =
+            "❌ Bot declined the draw. Keep playing!";
+
+
+        setTimeout(
+            checkGameStatus,
+            1800
+        );
+
+    }
+
 }
+
 
 function navigateHistory(direction) {
-    if (moveHistory.length === 0) return;
-    const target = currentHistoryIndex + direction;
-    if (target >= -1 && target < moveHistory.length) {
-        currentHistoryIndex = target;
-        renderHistoryFrame();
+
+    if (
+        moveHistory.length === 0
+    ) {
+
+        return;
+
     }
+
+
+    const target =
+        currentHistoryIndex +
+        direction;
+
+
+    if (
+        target >= -1 &&
+        target < moveHistory.length
+    ) {
+
+        currentHistoryIndex =
+            target;
+
+
+        renderHistoryFrame();
+
+    }
+
 }
+
 
 function jumpToBound(bound) {
-    if (moveHistory.length === 0) return;
-    currentHistoryIndex = bound === 'start' ? -1 : moveHistory.length - 1;
+
+    if (
+        moveHistory.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    currentHistoryIndex =
+        bound === "start"
+            ? -1
+            : moveHistory.length - 1;
+
+
     renderHistoryFrame();
+
 }
+
 
 function renderHistoryFrame() {
-    const temp = new Chess();
-    for (let i = 0; i <= currentHistoryIndex; i++) {
-        temp.move(moveHistory[i]);
+
+    if (
+        !board ||
+        !game
+    ) {
+
+        return;
+
     }
-    board.position(temp.fen(), true);
-    if (currentHistoryIndex !== moveHistory.length - 1) {
-        document.getElementById('chess-status').textContent =
+
+
+    const temp =
+        new Chess();
+
+
+    for (
+        let i = 0;
+        i <= currentHistoryIndex;
+        i++
+    ) {
+
+        temp.move(
+            moveHistory[i]
+        );
+
+    }
+
+
+    board.position(
+        temp.fen(),
+        true
+    );
+
+
+    if (
+        currentHistoryIndex !==
+        moveHistory.length - 1
+    ) {
+
+        document.getElementById(
+            "chess-status"
+        ).textContent =
             `Reviewing move ${currentHistoryIndex + 1} / ${moveHistory.length}`;
+
     } else {
+
         checkGameStatus();
+
     }
+
 }
 
-window.addEventListener('keydown', function (e) {
-    if (!document.getElementById('chess-screen').classList.contains('active')) return;
-    if (e.key === 'ArrowLeft') navigateHistory(-1);
-    else if (e.key === 'ArrowRight') navigateHistory(1);
-    else if (e.key === 'ArrowUp') { e.preventDefault(); jumpToBound('start'); }
-    else if (e.key === 'ArrowDown') { e.preventDefault(); jumpToBound('end'); }
-});
-/* ========== CODE EDITOR – REAL INTERPRETERS ========== */
-let currentLanguage = 'HTML';
-let pyodide = null;
-let pyodideLoading = false;
-let inputResolve = null;
+
+/* ==================================================
+   CHESS KEYBOARD
+================================================== */
+
+window.addEventListener(
+    "keydown",
+    function(e) {
+
+        const chessScreen =
+            document.getElementById(
+                "chess-screen"
+            );
+
+
+        if (
+            !chessScreen.classList.contains(
+                "active"
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        if (
+            e.key === "ArrowLeft"
+        ) {
+
+            navigateHistory(-1);
+
+        }
+
+
+        else if (
+            e.key === "ArrowRight"
+        ) {
+
+            navigateHistory(1);
+
+        }
+
+
+        else if (
+            e.key === "ArrowUp"
+        ) {
+
+            e.preventDefault();
+
+            jumpToBound("start");
+
+        }
+
+
+        else if (
+            e.key === "ArrowDown"
+        ) {
+
+            e.preventDefault();
+
+            jumpToBound("end");
+
+        }
+
+    }
+);
+
+
+/* ==================================================
+   CODE EDITOR
+================================================== */
+
+let currentLanguage =
+    "HTML";
+
+
+let pyodide =
+    null;
+
+
+let pyodideLoading =
+    false;
+
+
+/* ==================================================
+   PYTHON LOADER
+================================================== */
 
 async function loadPyodideOnce() {
-    if (pyodide) return pyodide;
-    if (pyodideLoading) {
-        while (pyodideLoading) await new Promise(r => setTimeout(r, 80));
+
+    if (pyodide) {
+
         return pyodide;
+
     }
-    pyodideLoading = true;
+
+
+    if (pyodideLoading) {
+
+        while (
+            pyodideLoading
+        ) {
+
+            await new Promise(
+                resolve =>
+                    setTimeout(
+                        resolve,
+                        100
+                    )
+            );
+
+        }
+
+
+        return pyodide;
+
+    }
+
+
+    pyodideLoading =
+        true;
+
 
     try {
-        pyodide = await loadPyodide({
-            indexURL: "https://cdn.jsdelivr.net/pyodide/v0.27.7/full/"
-        });
 
-        // Make print() appear in the output box
-        pyodide.setStdout({
-            batched: (text) => appendOutput(text)
-        });
-        pyodide.setStderr({
-            batched: (text) => appendOutput(text)
-        });
+        pyodide =
+            await loadPyodide({
 
-        // Expose a JS function that Python can call
-        pyodide.globals.set("js_input", (promptText) => {
-            return new Promise((resolve) => {
-                inputResolve = resolve;
-                showInputBox(promptText || "");
+                indexURL:
+                    "https://cdn.jsdelivr.net/pyodide/v0.27.7/full/"
+
             });
-        });
 
-        // Redefine Python's built-in input() so it uses our JS version
-        await pyodide.runPythonAsync(`
-import js
-import builtins
-
-async def _async_input(prompt=""):
-    result = await js.js_input(prompt)
-    return str(result)
-
-def input(prompt=""):
-    # This is a sync wrapper that works with await under the hood
-    import asyncio
-    return asyncio.get_event_loop().run_until_complete(_async_input(prompt))
-
-builtins.input = input
-        `);
-
-    } catch (err) {
-        console.error(err);
-        document.getElementById('editor-output').textContent =
-            "Failed to load Python. Please refresh the page.";
-    } finally {
-        pyodideLoading = false;
     }
+
+
+    catch(error) {
+
+        console.error(
+            "Pyodide failed:",
+            error
+        );
+
+
+        pyodide =
+            null;
+
+    }
+
+
+    finally {
+
+        pyodideLoading =
+            false;
+
+    }
+
+
     return pyodide;
+
 }
+
+
+/* ==================================================
+   OUTPUT
+================================================== */
 
 function appendOutput(text) {
-    const out = document.getElementById('editor-output');
-    out.textContent += text;
-    out.scrollTop = out.scrollHeight;
+
+    const output =
+        document.getElementById(
+            "editor-output"
+        );
+
+
+    output.textContent +=
+        text;
+
+
+    output.scrollTop =
+        output.scrollHeight;
+
 }
 
-function showInputBox(promptText) {
-    const out = document.getElementById('editor-output');
 
-    // Show the prompt first
-    if (promptText) {
-        appendOutput(promptText);
+/* ==================================================
+   START EDITOR
+================================================== */
+
+function startEditor(language) {
+
+    currentLanguage =
+        language;
+
+
+    document.getElementById(
+        "current-lang-title"
+    ).textContent =
+        language;
+
+
+    const editor =
+        document.getElementById(
+            "editor-input"
+        );
+
+
+    const hint =
+        document.getElementById(
+            "editor-hint"
+        );
+
+
+    const output =
+        document.getElementById(
+            "editor-output"
+        );
+
+
+    output.textContent =
+        "Your output will appear here...";
+
+
+    if (
+        language === "HTML"
+    ) {
+
+        hint.textContent =
+            "Type HTML and hit RUN to see it rendered live.";
+
+
+        editor.value =
+`<h1>Hello World!</h1>
+<p>This is my HTML design.</p>`;
+
     }
 
-    const line = document.createElement('div');
-    line.style.marginTop = '6px';
-    line.style.display = 'flex';
-    line.style.gap = '8px';
-    line.style.alignItems = 'center';
 
-    const prefix = document.createElement('span');
-    prefix.textContent = '>>> ';
-    prefix.style.color = '#888';
-    prefix.style.fontFamily = 'monospace';
+    else if (
+        language === "Python"
+    ) {
 
-    const inp = document.createElement('input');
-    inp.type = 'text';
-    inp.placeholder = 'Type here and press Enter…';
-    inp.style.flex = '1';
-    inp.style.padding = '7px 10px';
-    inp.style.fontSize = '1rem';
-    inp.style.border = '2px solid var(--box-border)';
-    inp.style.borderRadius = '6px';
-    inp.style.background = 'var(--box-bg)';
-    inp.style.color = 'var(--text-color)';
-    inp.style.fontFamily = 'monospace';
-    inp.autofocus = true;
+        hint.textContent =
+            "Python runs directly in your browser using Pyodide. print() works.";
 
-    line.appendChild(prefix);
-    line.appendChild(inp);
-    out.appendChild(line);
-    out.scrollTop = out.scrollHeight;
-    inp.focus();
 
-    inp.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            const value = inp.value;
-            // Replace the input line with what the user typed
-            line.innerHTML = `<span style="color:#888">>>> </span>${value}`;
-            
-            if (inputResolve) {
-                inputResolve(value);
-                inputResolve = null;
-            }
-        }
-    });
-}
+        editor.value =
+`name = "Haaris"
 
-function startEditor(lang) {
-    currentLanguage = lang;
-    document.getElementById('current-lang-title').textContent = lang;
-    const txtArea = document.getElementById('editor-input');
-    const hint = document.getElementById('editor-hint');
-    const output = document.getElementById('editor-output');
-    output.innerHTML = "Your output will appear here...";
-
-    if (lang === 'HTML') {
-        hint.textContent = "Type HTML and hit RUN to see it rendered live.";
-        txtArea.value = "<h1>Hello World!</h1>\n<p>This is my HTML design.</p>";
-    } else if (lang === 'Python') {
-        hint.textContent = "Real Python. print() and input() work inside the page (no popups).";
-        txtArea.value = `name = input("What is your name? ")
-print("Nice to meet you,", name)
-
-age = input("Your age: ")
-print("In 5 years you will be", int(age) + 5)`;
-        loadPyodideOnce(); // preload
-    } else if (lang === 'Lua') {
-        hint.textContent = "Real Lua (Fengari). print() works.";
-        txtArea.value = `print("Hello from Lua!")
+print("Hello", name)
+print("Welcome to Python!")
 print(2 + 2)
+
+for number in range(1, 6):
+    print(number)`;
+
+
+        loadPyodideOnce();
+
+    }
+
+
+    else if (
+        language === "Lua"
+    ) {
+
+        hint.textContent =
+            "Lua runs directly in your browser using Fengari.";
+
+
+        editor.value =
+`print("Hello from Lua!")
+print(2 + 2)
+
 for i = 1, 3 do
     print("Loop " .. i)
 end`;
+
     }
-    showScreen('editor-screen');
+
+
+    updateLineNumbers();
+
+
+    showScreen(
+        "editor-screen"
+    );
+
 }
+
+
+/* ==================================================
+   RUN CODE
+================================================== */
 
 async function runCode() {
-    const code = document.getElementById('editor-input').value;
-    const output = document.getElementById('editor-output');
-    const runBtn = document.getElementById('run-btn');
 
-    if (currentLanguage === 'HTML') {
-        output.innerHTML = code;
+    const code =
+        document.getElementById(
+            "editor-input"
+        ).value;
+
+
+    const output =
+        document.getElementById(
+            "editor-output"
+        );
+
+
+    const runButton =
+        document.getElementById(
+            "run-btn"
+        );
+
+
+    /* ================= HTML ================= */
+
+    if (
+        currentLanguage === "HTML"
+    ) {
+
+        output.innerHTML =
+            code;
+
         return;
+
     }
 
-    // Clear previous output
-    output.innerHTML = "";
 
-    if (currentLanguage === 'Python') {
-        runBtn.disabled = true;
-        runBtn.textContent = "⏳ Running…";
+    /* ================= PYTHON ================= */
+
+    if (
+        currentLanguage === "Python"
+    ) {
+
+        runButton.disabled =
+            true;
+
+
+        runButton.textContent =
+            "⏳ Loading Python...";
+
+
+        output.textContent =
+            "";
+
+
         try {
-            const py = await loadPyodideOnce();
+
+            const py =
+                await loadPyodideOnce();
+
+
             if (!py) {
-                output.textContent = "Python runtime failed to load.";
+
+                output.textContent =
+                    "❌ Python failed to load.";
+
                 return;
+
             }
-            // Run the user code
-            await py.runPythonAsync(code);
-        } catch (err) {
-            appendOutput("\n❌ Python Error:\n" + err.message);
-        } finally {
-            runBtn.disabled = false;
-            runBtn.textContent = "⚡ RUN CODE";
-        }
-    }
 
-    else if (currentLanguage === 'Lua') {
-        try {
-            const L = fengari.lauxlib.luaL_newstate();
-            fengari.lualib.luaL_openlibs(L);
 
-            let luaOutput = "";
-            fengari.lua.lua_pushcfunction(L, function(L) {
-                const n = fengari.lua.lua_gettop(L);
-                const parts = [];
-                for (let i = 1; i <= n; i++) {
-                    parts.push(fengari.lua.to_jsstring(fengari.lua.lua_tostring(L, i)));
-                }
-                luaOutput += parts.join("\t") + "\n";
-                return 0;
+            py.setStdout({
+
+                batched:
+                    function(text) {
+
+                        appendOutput(
+                            text
+                        );
+
+                    }
+
             });
-            fengari.lua.lua_setglobal(L, fengari.to_luastring("print"));
 
-            const status = fengari.lauxlib.luaL_dostring(L, fengari.to_luastring(code));
-            if (status !== fengari.lua.LUA_OK) {
-                const errMsg = fengari.lua.to_jsstring(fengari.lua.lua_tostring(L, -1));
-                output.textContent = "❌ Lua Error:\n" + errMsg;
-            } else {
-                output.textContent = luaOutput || "(no output)";
+
+            py.setStderr({
+
+                batched:
+                    function(text) {
+
+                        appendOutput(
+                            text
+                        );
+
+                    }
+
+            });
+
+
+            runButton.textContent =
+                "⏳ Running...";
+
+
+            await py.runPythonAsync(
+                code
+            );
+
+
+            if (
+                output.textContent.trim() ===
+                ""
+            ) {
+
+                output.textContent =
+                    "(no output)";
+
             }
-        } catch (err) {
-            output.textContent = "❌ Lua Error:\n" + err.message;
-        }
-    }
-}
-/* ========== KEYBOARD HELPERS ========== */
-window.onload = function () {
-    document.getElementById('math-input').addEventListener('keypress', e => {
-        if (e.key === 'Enter') checkMathAnswer();
-    });
-    document.getElementById('country-input').addEventListener('keypress', e => {
-        if (e.key === 'Enter') checkCountryAnswer();
-    });
-};
 
-// Target the correct textarea ID
-const editorInput = document.getElementById('editor-input');
+        }
+
+
+        catch(error) {
+
+            output.textContent =
+                "❌ Python Error:\n\n" +
+                error.message;
+
+        }
+
+
+        finally {
+
+            runButton.disabled =
+                false;
+
+
+            runButton.textContent =
+                "⚡ RUN CODE";
+
+        }
+
+    }
+
+
+    /* ================= LUA ================= */
+
+    else if (
+        currentLanguage === "Lua"
+    ) {
+
+        output.textContent =
+            "";
+
+
+        try {
+
+            const L =
+                fengari.lauxlib.luaL_newstate();
+
+
+            fengari.lualib.luaL_openlibs(
+                L
+            );
+
+
+            let luaOutput =
+                "";
+
+
+            fengari.lua.lua_pushcfunction(
+                L,
+                function(L) {
+
+                    const count =
+                        fengari.lua.lua_gettop(
+                            L
+                        );
+
+
+                    const parts =
+                        [];
+
+
+                    for (
+                        let i = 1;
+                        i <= count;
+                        i++
+                    ) {
+
+                        const value =
+                            fengari.lua.lua_tostring(
+                                L,
+                                i
+                            );
+
+
+                        if (value) {
+
+                            parts.push(
+                                fengari.to_jsstring(
+                                    value
+                                )
+                            );
+
+                        } else {
+
+                            parts.push(
+                                "nil"
+                            );
+
+                        }
+
+                    }
+
+
+                    luaOutput +=
+                        parts.join("\t") +
+                        "\n";
+
+
+                    return 0;
+
+                }
+            );
+
+
+            fengari.lua.lua_setglobal(
+                L,
+                fengari.to_luastring(
+                    "print"
+                )
+            );
+
+
+            const status =
+                fengari.lauxlib.luaL_dostring(
+                    L,
+                    fengari.to_luastring(
+                        code
+                    )
+                );
+
+
+            if (
+                status !==
+                fengari.lua.LUA_OK
+            ) {
+
+                const error =
+                    fengari.lua.lua_tostring(
+                        L,
+                        -1
+                    );
+
+
+                output.textContent =
+                    "❌ Lua Error:\n\n" +
+                    (
+                        error
+                            ? fengari.to_jsstring(
+                                error
+                              )
+                            : "Unknown Lua error"
+                    );
+
+            }
+
+
+            else {
+
+                output.textContent =
+                    luaOutput ||
+                    "(no output)";
+
+            }
+
+        }
+
+
+        catch(error) {
+
+            output.textContent =
+                "❌ Lua Error:\n\n" +
+                error.message;
+
+        }
+
+    }
+
+}
+
+
+/* ==================================================
+   EDITOR ELEMENTS
+================================================== */
+
+const editorInput =
+    document.getElementById(
+        "editor-input"
+    );
+
+
+const lineNumbers =
+    document.getElementById(
+        "line-numbers"
+    );
+
+
+const searchContainer =
+    document.getElementById(
+        "search-container"
+    );
+
+
+const searchInput =
+    document.getElementById(
+        "search-input"
+    );
+
+
+const gotoLineContainer =
+    document.getElementById(
+        "goto-line-container"
+    );
+
+
+const gotoLineInput =
+    document.getElementById(
+        "goto-line-input"
+    );
+
+
+/* ==================================================
+   TAB KEY
+================================================== */
 
 if (editorInput) {
-    editorInput.addEventListener('keydown', function (e) {
-        if (e.key === 'Tab') {
-            e.preventDefault(); // Prevent focus from switching to another element
 
-            const start = this.selectionStart;
-            const end = this.selectionEnd;
+    editorInput.addEventListener(
+        "keydown",
+        function(e) {
 
-            // Insert 2 spaces at the cursor position
-            this.value = this.value.substring(0, start) + '  ' + this.value.substring(end);
+            if (
+                e.key === "Tab"
+            ) {
 
-            // Reposition the cursor right after the 2 spaces
-            this.selectionStart = this.selectionEnd = start + 2;
+                e.preventDefault();
+
+
+                const start =
+                    this.selectionStart;
+
+
+                const end =
+                    this.selectionEnd;
+
+
+                this.value =
+                    this.value.substring(
+                        0,
+                        start
+                    ) +
+                    "  " +
+                    this.value.substring(
+                        end
+                    );
+
+
+                this.selectionStart =
+                    this.selectionEnd =
+                    start + 2;
+
+
+                updateLineNumbers();
+
+            }
+
         }
-    });
+    );
+
+
+    editorInput.addEventListener(
+        "input",
+        updateLineNumbers
+    );
+
+
+    editorInput.addEventListener(
+        "scroll",
+        function() {
+
+            lineNumbers.scrollTop =
+                editorInput.scrollTop;
+
+        }
+    );
+
 }
+
+
+/* ==================================================
+   LINE NUMBERS
+================================================== */
+
+function updateLineNumbers() {
+
+    if (
+        !lineNumbers ||
+        !editorInput
+    ) {
+
+        return;
+
+    }
+
+
+    const lines =
+        editorInput.value.split(
+            "\n"
+        ).length;
+
+
+    let numbers =
+        [];
+
+
+    for (
+        let i = 1;
+        i <= lines;
+        i++
+    ) {
+
+        numbers.push(i);
+
+    }
+
+
+    lineNumbers.innerHTML =
+        numbers.join("<br>");
+
+
+    /* Keep line-number height
+       matched to editor */
+
+    lineNumbers.style.height =
+        editorInput.offsetHeight +
+        "px";
+
+}
+
+
+/* ==================================================
+   FIND BAR
+================================================== */
+
+function toggleSearch(show) {
+
+    if (!searchContainer) {
+
+        return;
+
+    }
+
+
+    if (show) {
+
+        /* Close Go To Line */
+
+        toggleGoToLine(false);
+
+
+        searchContainer.classList.add(
+            "active"
+        );
+
+
+        searchInput.focus();
+
+        searchInput.select();
+
+    }
+
+
+    else {
+
+        searchContainer.classList.remove(
+            "active"
+        );
+
+    }
+
+}
+
+
+/* ==================================================
+   FIND IN CODE
+================================================== */
+
+function findInCode() {
+
+    if (
+        !searchInput ||
+        !editorInput
+    ) {
+
+        return;
+
+    }
+
+
+    const query =
+        searchInput.value;
+
+
+    if (!query) {
+
+        return;
+
+    }
+
+
+    const content =
+        editorInput.value;
+
+
+    const start =
+        editorInput.selectionEnd || 0;
+
+
+    const lowerContent =
+        content.toLowerCase();
+
+
+    const lowerQuery =
+        query.toLowerCase();
+
+
+    let index =
+        lowerContent.indexOf(
+            lowerQuery,
+            start
+        );
+
+
+    if (
+        index === -1
+    ) {
+
+        index =
+            lowerContent.indexOf(
+                lowerQuery,
+                0
+            );
+
+    }
+
+
+    if (
+        index !== -1
+    ) {
+
+        editorInput.focus();
+
+
+        editorInput.setSelectionRange(
+            index,
+            index + query.length
+        );
+
+    }
+
+
+    else {
+
+        alert(
+            "Text not found!"
+        );
+
+    }
+
+}
+
+
+/* ==================================================
+   FIND ENTER KEY
+================================================== */
+
+if (searchInput) {
+
+    searchInput.addEventListener(
+        "keydown",
+        function(e) {
+
+            if (
+                e.key === "Enter"
+            ) {
+
+                e.preventDefault();
+
+                findInCode();
+
+            }
+
+        }
+    );
+
+}
+
+
+/* ==================================================
+   GO TO LINE
+================================================== */
+
+function toggleGoToLine(show) {
+
+    if (
+        !gotoLineContainer
+    ) {
+
+        return;
+
+    }
+
+
+    if (show) {
+
+        /* Close Find */
+
+        toggleSearch(false);
+
+
+        gotoLineContainer.classList.add(
+            "active"
+        );
+
+
+        gotoLineInput.focus();
+
+
+        gotoLineInput.select();
+
+    }
+
+
+    else {
+
+        gotoLineContainer.classList.remove(
+            "active"
+        );
+
+    }
+
+}
+
+
+/* ==================================================
+   ACTUALLY GO TO THE LINE
+================================================== */
+
+function goToLine() {
+
+    if (
+        !editorInput ||
+        !gotoLineInput
+    ) {
+
+        return;
+
+    }
+
+
+    const requestedLine =
+        parseInt(
+            gotoLineInput.value,
+            10
+        );
+
+
+    const lines =
+        editorInput.value.split(
+            "\n"
+        );
+
+
+    const totalLines =
+        lines.length;
+
+
+    /* Invalid number */
+
+    if (
+        isNaN(requestedLine)
+    ) {
+
+        return;
+
+    }
+
+
+    /* Keep the number
+       inside the editor */
+
+    let line =
+        requestedLine;
+
+
+    if (
+        line < 1
+    ) {
+
+        line = 1;
+
+    }
+
+
+    if (
+        line > totalLines
+    ) {
+
+        line = totalLines;
+
+    }
+
+
+    /* Calculate character
+       position of the line */
+
+    let position =
+        0;
+
+
+    for (
+        let i = 0;
+        i < line - 1;
+        i++
+    ) {
+
+        position +=
+            lines[i].length +
+            1;
+
+    }
+
+
+    /* Move cursor */
+
+    editorInput.focus();
+
+
+    editorInput.setSelectionRange(
+        position,
+        position
+    );
+
+
+    /* Scroll the editor
+       so the line is visible */
+
+    const lineHeight =
+        parseFloat(
+            getComputedStyle(
+                editorInput
+            ).lineHeight
+        );
+
+
+    editorInput.scrollTop =
+        Math.max(
+            0,
+            (line - 1) *
+                lineHeight -
+                editorInput.clientHeight / 2
+        );
+
+
+    /* Scroll line numbers too */
+
+    lineNumbers.scrollTop =
+        editorInput.scrollTop;
+
+
+    /* Update the input with
+       the actual line reached */
+
+    gotoLineInput.value =
+        line;
+
+}
+
+
+/* ==================================================
+   GO TO LINE ENTER KEY
+================================================== */
+
+if (gotoLineInput) {
+
+    gotoLineInput.addEventListener(
+        "keydown",
+        function(e) {
+
+            if (
+                e.key === "Enter"
+            ) {
+
+                e.preventDefault();
+
+                goToLine();
+
+            }
+
+        }
+    );
+
+}
+
+
+/* ==================================================
+   KEYBOARD SHORTCUTS
+================================================== */
+
+window.addEventListener(
+    "keydown",
+    function(e) {
+
+        const editorScreen =
+            document.getElementById(
+                "editor-screen"
+            );
+
+
+        if (
+            !editorScreen.classList.contains(
+                "active"
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        const activeElement =
+            document.activeElement;
+
+
+        const isTyping =
+            activeElement &&
+            (
+                activeElement.tagName ===
+                    "INPUT" ||
+                activeElement.tagName ===
+                    "TEXTAREA"
+            );
+
+
+        /* ================= L ================= */
+
+        if (
+            !isTyping &&
+            (
+                e.key === "l" ||
+                e.key === "L"
+            )
+        ) {
+
+            e.preventDefault();
+
+            toggleGoToLine(true);
+
+        }
+
+
+        /* ================= CTRL + F ================= */
+
+        if (
+            (e.ctrlKey || e.metaKey) &&
+            e.key.toLowerCase() === "f"
+        ) {
+
+            e.preventDefault();
+
+            toggleSearch(true);
+
+        }
+
+    }
+);
+
+
+/* ==================================================
+   QUIZ ENTER KEYS
+================================================== */
+
+window.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        const mathInput =
+            document.getElementById(
+                "math-input"
+            );
+
+
+        const countryInput =
+            document.getElementById(
+                "country-input"
+            );
+
+
+        if (mathInput) {
+
+            mathInput.addEventListener(
+                "keydown",
+                function(e) {
+
+                    if (
+                        e.key === "Enter"
+                    ) {
+
+                        checkMathAnswer();
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        if (countryInput) {
+
+            countryInput.addEventListener(
+                "keydown",
+                function(e) {
+
+                    if (
+                        e.key === "Enter"
+                    ) {
+
+                        checkCountryAnswer();
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        /* Start with line numbers
+           already visible */
+
+        updateLineNumbers();
+
+    });
+
 </script>
+
 </body>
 </html>
