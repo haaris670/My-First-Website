@@ -864,6 +864,26 @@ window.onload = function () {
         if (e.key === 'Enter') checkCountryAnswer();
     });
 };
+
+// Target the correct textarea ID
+const editorInput = document.getElementById('editor-input');
+
+if (editorInput) {
+    editorInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Tab') {
+            e.preventDefault(); // Prevent focus from switching to another element
+
+            const start = this.selectionStart;
+            const end = this.selectionEnd;
+
+            // Insert 2 spaces at the cursor position
+            this.value = this.value.substring(0, start) + '  ' + this.value.substring(end);
+
+            // Reposition the cursor right after the 2 spaces
+            this.selectionStart = this.selectionEnd = start + 2;
+        }
+    });
+}
 </script>
 </body>
 </html>
