@@ -110,12 +110,50 @@
         .update-box h2 {
             color: var(--h1-color);
             margin-top: 0;
+            line-height: 1.5;
+        }
+
+        /* Roblox profile button */
+        .profile-button {
+            display: inline-block;
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            text-decoration: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+        }
+
+        .profile-button:hover {
+            background-color: var(--btn-hover);
+        }
+
+        /* Update sections */
+        .update-section {
+            margin-top: 25px;
+        }
+
+        .update-section h3 {
+            color: var(--h1-color);
+            font-size: 1.3rem;
+            margin-bottom: 10px;
         }
 
         .update-list {
             font-family: Arial, sans-serif;
             font-size: 1.1rem;
             line-height: 1.8;
+            padding-left: 25px;
+            margin-top: 5px;
+        }
+
+        .update-list li {
+            margin-bottom: 6px;
+        }
+
+        .update-list li::marker {
+            color: var(--h1-color);
         }
 
         .back-button {
@@ -133,6 +171,24 @@
         .back-button:hover {
             background-color: var(--btn-hover);
         }
+
+        @media (max-width: 520px) {
+            h1 {
+                font-size: 2.1rem;
+            }
+
+            .update-box {
+                padding: 20px;
+            }
+
+            .update-list {
+                font-size: 1rem;
+            }
+
+            .logo {
+                font-size: 1.1rem;
+            }
+        }
     </style>
 </head>
 
@@ -142,41 +198,109 @@
         <div class="logo">🎮 Haaris670's site</div>
 
         <div class="nav-buttons">
-            <button class="nav-button" onclick="toggleTheme()">🌓 Theme</button>
+            <button class="nav-button" onclick="toggleTheme()">
+                🌓 Theme
+            </button>
         </div>
     </nav>
 
     <div class="main-container">
 
         <h1>📋 Update Log</h1>
-        <p class="subtitle">Here you can see the latest updates to my website.</p>
+
+        <p class="subtitle">
+            Here you can see the latest updates to my website.
+        </p>
 
         <div class="update-box">
 
-            <h2>Latest Updates, Follow <a href="https://roblox.com/users/4846160103" class="button">ItsHaaristhebest</a> For more updates</h2>
+            <h2>
+                Latest Updates
+                <br>
+                Follow
+                <a
+                    href="https://roblox.com/users/4846160103"
+                    target="_blank"
+                    class="profile-button"
+                >
+                    ItsHaaristhebest
+                </a>
+                for more updates!
+            </h2>
 
-            <!-- ADD YOUR UPDATE POINTS HERE -->
-            <ul class="update-list">
-              <li>Added new Country Guesser game</li>
-              <li>Updated UI</li>
-              <li>Improved programming interpreters in the code Editor</li>
-            </ul>
+            <!-- 🎮 GAMES -->
+            <div class="update-section">
+                <h3>🎮 Games</h3>
+
+                <ul class="update-list">
+                    <li>🌍 Added a new <strong>Country Guesser</strong> game.</li>
+                    <li>♟️ Improved the interactive <strong>Chess</strong> game.</li>
+                    <li>🧮 Improved the <strong>Math Quiz</strong>.</li>
+                </ul>
+            </div>
+
+            <!-- 💻 CODE EDITOR -->
+            <div class="update-section">
+                <h3>💻 Code Editor</h3>
+
+                <ul class="update-list">
+                    <li>🔢 <strong>Line numbers are now enabled by default.</strong></li>
+
+                    <li>🎯 Added a new <strong>Go to Line</strong> feature.</li>
+
+                    <li>⌨️ Press <strong>L</strong> to open the Go to Line bar.</li>
+
+                    <li>⚡ Enter a line number and press <strong>Enter</strong> to instantly jump to that line.</li>
+
+                    <li>🔎 Improved the <strong>Find in Code</strong> feature.</li>
+
+                    <li>⌨️ Improved <strong>Tab indentation</strong> inside the editor.</li>
+
+                    <li>🐍 Improved the <strong>Python</strong> interpreter.</li>
+
+                    <li>🌙 Improved the <strong>Lua</strong> interpreter.</li>
+
+                    <li>🌐 Improved the <strong>HTML</strong> editor.</li>
+                </ul>
+            </div>
+
+            <!-- 🎨 UI -->
+            <div class="update-section">
+                <h3>🎨 UI & Improvements</h3>
+
+                <ul class="update-list">
+                    <li>✨ Updated the website UI.</li>
+
+                    <li>📱 Improved the layout for smaller screens.</li>
+
+                    <li>🌓 Improved the Light/Dark theme system.</li>
+
+                    <li>🛠️ Fixed several bugs and code editor issues.</li>
+
+                    <li>🚀 Improved overall website performance and usability.</li>
+                </ul>
+            </div>
 
         </div>
 
-        <button class="back-button" onclick="window.location.href='../index.html'">
+        <button
+            class="back-button"
+            onclick="window.location.href='../index.html'"
+        >
             ← Back to Website
         </button>
 
     </div>
 
     <script>
+        // Load saved theme
         const savedTheme = localStorage.getItem('selectedTheme');
 
         if (savedTheme) {
             document.documentElement.className = savedTheme;
         }
 
+        // Theme toggle
         function toggleTheme() {
             const isDark =
                 document.documentElement.classList.toggle('dark');
